@@ -1,0 +1,7 @@
+__pycache__/
+db.sqlite3
+django.log
+venv
+.idea
+.env*
+!.env*.example
