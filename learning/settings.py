@@ -33,6 +33,7 @@ ALLOWED_HOSTS = decouple.config('ALLOWED_HOSTS', cast=decouple.Csv())
 # Application definition
 
 INSTALLED_APPS = [
+    'material.apps.MaterialConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
