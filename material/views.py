@@ -1,15 +1,24 @@
-from django.shortcuts import render
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets
 
-from .models import Category, Lesson
-from .serializers import CategorySerializer, LessonSerializer
+from material import models
+from material import serializers
 
 
-class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+class SectionViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.Section.objects.all()
+    serializer_class = serializers.SectionSerializer
+
+
+class QuestionViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.Question.objects.all()
+    serializer_class = serializers.QuestionSerializer
 
 
 class LessonViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Lesson.objects.all()
-    serializer_class = LessonSerializer
+    queryset = models.Lesson.objects.all()
+    serializer_class = serializers.LessonSerializer
+
+
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.Category.objects.all()
+    serializer_class = serializers.CategorySerializer
