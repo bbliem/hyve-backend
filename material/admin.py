@@ -1,9 +1,11 @@
 from django.contrib import admin
 
-from .models import Category, TextContent, Quiz, Question, Answer
+from .models import Answer, Category, Lesson, LessonContent, Quiz, Question, TextSection
 
 admin.site.register(Category)
-admin.site.register(TextContent)
+admin.site.register(Lesson)
+admin.site.register(TextSection)
+admin.site.register(LessonContent)
 
 
 class AnswerInline(admin.TabularInline):

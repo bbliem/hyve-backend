@@ -1,15 +1,15 @@
 from rest_framework import serializers
 
-from .models import Category, Content
+from .models import Category, Lesson
 
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Category
-        fields = ['url', 'name', 'description']
+        fields = ['name', 'description', 'lessons']
 
 
-class ContentSerializer(serializers.HyperlinkedModelSerializer):
+class LessonSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Content
-        fields = ['url', 'name', 'description', 'categories']
+        model = Lesson
+        fields = ['name', 'description']

@@ -21,7 +21,7 @@ from material import views
 
 router = routers.DefaultRouter()
 router.register(r'categories', views.CategoryViewSet)
-router.register(r'contents', views.ContentViewSet)
+router.register(r'lessons', views.LessonViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
