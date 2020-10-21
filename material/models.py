@@ -1,7 +1,4 @@
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models import Q
 
 
 class Section(models.Model):
@@ -31,7 +28,7 @@ class Answer(models.Model):
     class Meta:
         order_with_respect_to = 'question'
 
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
     text = models.CharField(max_length=250)
     correct = models.BooleanField(default=False)
 
@@ -42,13 +39,13 @@ class Answer(models.Model):
 class Lesson(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True)
-    sections = models.ManyToManyField(Section, through='LessonContent')
+    sections = models.ManyToManyField(Section, through='Content')
 
     def __str__(self):
         return self.name
 
 
-class LessonContent(models.Model):
+class Content(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['lesson', 'section'], name='no_duplicate_sections_per_lesson'),

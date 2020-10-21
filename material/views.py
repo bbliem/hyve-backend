@@ -14,6 +14,11 @@ class QuestionViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.QuestionSerializer
 
 
+class AnswerViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.Answer.objects.all()
+    serializer_class = serializers.AnswerSerializer
+
+
 class LessonViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.Lesson.objects.all()
     serializer_class = serializers.LessonSerializer

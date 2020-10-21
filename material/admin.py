@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Answer, Category, Lesson, Question, Section, LessonContent
+from .models import Answer, Category, Lesson, Question, Section, Content
 
 admin.site.register(Category)
 
@@ -23,10 +23,10 @@ class SectionAdmin(admin.ModelAdmin):
     inlines = [QuestionInline]
 
 
-class LessonContentInline(admin.TabularInline):
-    model = LessonContent
+class ContentInline(admin.TabularInline):
+    model = Content
 
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    inlines = [LessonContentInline]
+    inlines = [ContentInline]
