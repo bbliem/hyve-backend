@@ -4,7 +4,13 @@ from material import models
 
 cat1 = models.Category.objects.create(name="Category 1")
 les1 = models.Lesson.objects.create(name="Lesson 1")
-cat1.lessons.set([les1])
+les2 = models.Lesson.objects.create(name="Lesson 2")
+cat1.lessons.set([les1, les2])
+
+cat2 = models.Category.objects.create(name="Category 2")
+les3 = models.Lesson.objects.create(name="Lesson 3")
+cat2.lessons.set([les2, les3])
+
 txt1 = models.Section.objects.create(text="foo")
 qz1 = models.Section.objects.create()
 q1 = models.Question.objects.create(text="Q?", section=qz1)

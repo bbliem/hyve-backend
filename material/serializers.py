@@ -7,13 +7,13 @@ from material import models
 class AnswerSerializer(FlexFieldsSerializerMixin, serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Answer
-        fields = ['url', 'question', 'text', 'correct']
+        fields = ['url', 'id', 'question', 'text', 'correct']
 
 
 class QuestionSerializer(FlexFieldsSerializerMixin, serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Question
-        fields = ['url', 'section', 'text', 'answers']
+        fields = ['url', 'id', 'section', 'text', 'answers']
         expandable_fields = {
             'answers': (AnswerSerializer, {'source': 'answers', 'many': True, 'omit': ['question']})
         }
@@ -22,7 +22,7 @@ class QuestionSerializer(FlexFieldsSerializerMixin, serializers.HyperlinkedModel
 class SectionSerializer(FlexFieldsSerializerMixin, serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Section
-        fields = ['url', 'text', 'questions']
+        fields = ['url', 'id', 'text', 'questions']
         expandable_fields = {
             'questions': (QuestionSerializer, {'source': 'questions', 'many': True})
         }
@@ -42,7 +42,7 @@ class LessonSerializer(FlexFieldsSerializerMixin, serializers.HyperlinkedModelSe
 
     class Meta:
         model = models.Lesson
-        fields = ['url', 'name', 'description', 'contents']
+        fields = ['url', 'id', 'name', 'description', 'contents']
         expandable_fields = {
             'contents': (ContentSerializer, {'source': 'content_set', 'many': True, 'omit': ['lesson']})
         }
@@ -51,7 +51,7 @@ class LessonSerializer(FlexFieldsSerializerMixin, serializers.HyperlinkedModelSe
 class CategorySerializer(FlexFieldsSerializerMixin, serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Category
-        fields = ['name', 'description', 'lessons']
+        fields = ['url', 'id', 'name', 'description', 'lessons']
         expandable_fields = {
             'lessons': (LessonSerializer, {'many': True})
         }
