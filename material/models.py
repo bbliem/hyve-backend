@@ -1,5 +1,7 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
+
+from material import managers
 
 
 class Section(models.Model):
@@ -71,5 +73,42 @@ class Category(models.Model):
         return self.name
 
 
-class User(AbstractUser):
+class User(AbstractBaseUser):
+    email = models.EmailField(
+        max_length=254,
+        verbose_name='email address',
+        unique=True,
+    )
+    is_active = models.BooleanField(
+        default=True,
+        help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.',
+        verbose_name='active',
+    )
+    # is_staff = models.BooleanField(
+    #     default=False,
+    #     help_text='Designates whether the user can log into this admin site.',
+    #     verbose_name='staff status',
+    # )
+    is_admin = models.BooleanField(default=False)
+
     completed_sections = models.ManyToManyField(Section)
+
+    objects = managers.UserManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    def __str__(self):
+        return self.email
+
+    def has_perm(self, perm, obj=None):
+        # TODO check if the following is a security problem
+        return True
+
+    def has_module_perms(self, app_label):
+        # TODO check if the following is a security problem
+        return True
+
+    @property
+    def is_staff(self):
+        return self.is_admin

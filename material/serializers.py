@@ -60,4 +60,4 @@ class CategorySerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer)
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
-        fields = ['url', 'id', 'username']
+        fields = ['url', 'id', 'username', 'completed_sections']
