@@ -20,11 +20,12 @@ from rest_framework import routers
 from material import views
 
 router = routers.DefaultRouter()
-router.register(r'sections', views.SectionViewSet)
-router.register(r'questions', views.QuestionViewSet)
 router.register(r'answers', views.AnswerViewSet)
-router.register(r'lessons', views.LessonViewSet)
 router.register(r'categories', views.CategoryViewSet)
+router.register(r'lessons', views.LessonViewSet)
+router.register(r'questions', views.QuestionViewSet)
+router.register(r'sections', views.SectionViewSet)
+router.register(r'users', views.UserViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

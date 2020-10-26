@@ -1,32 +1,34 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
-from .models import Answer, Category, Lesson, Question, Section, Content
+from material import models
 
-admin.site.register(Category)
+admin.site.register(models.User, UserAdmin)
+admin.site.register(models.Category)
 
 
 class AnswerInline(admin.TabularInline):
-    model = Answer
+    model = models.Answer
 
 
-@admin.register(Question)
+@admin.register(models.Question)
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [AnswerInline]
 
 
 class QuestionInline(admin.TabularInline):
-    model = Question
+    model = models.Question
 
 
-@admin.register(Section)
+@admin.register(models.Section)
 class SectionAdmin(admin.ModelAdmin):
     inlines = [QuestionInline]
 
 
 class ContentInline(admin.TabularInline):
-    model = Content
+    model = models.Content
 
 
-@admin.register(Lesson)
+@admin.register(models.Lesson)
 class LessonAdmin(admin.ModelAdmin):
     inlines = [ContentInline]

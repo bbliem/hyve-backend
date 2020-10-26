@@ -4,16 +4,16 @@ from rest_framework import serializers
 from material import models
 
 
-class AnswerSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Answer
-        fields = ['id', 'question', 'text', 'correct']
+        fields = ['url', 'id', 'question', 'text', 'correct']
 
 
 class QuestionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Question
-        fields = ['id', 'section', 'text', 'answers']
+        fields = ['url', 'id', 'section', 'text', 'answers']
         expandable_fields = {
             'answers': (AnswerSerializer, {'source': 'answers', 'many': True, 'omit': ['question']})
         }
@@ -22,7 +22,7 @@ class QuestionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer)
 class SectionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Section
-        fields = ['id', 'text', 'questions']
+        fields = ['url', 'id', 'text', 'questions']
         expandable_fields = {
             'questions': (QuestionSerializer, {'source': 'questions', 'many': True})
         }
@@ -42,7 +42,7 @@ class LessonSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = models.Lesson
-        fields = ['id', 'name', 'description', 'contents']
+        fields = ['url', 'id', 'name', 'description', 'contents']
         expandable_fields = {
             'contents': (ContentSerializer, {'source': 'content_set', 'many': True, 'omit': ['lesson']})
         }
@@ -51,7 +51,13 @@ class LessonSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
 class CategorySerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Category
-        fields = ['id', 'name', 'description', 'lessons']
+        fields = ['url', 'id', 'name', 'description', 'lessons']
         expandable_fields = {
             'lessons': (LessonSerializer, {'many': True})
         }
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.User
+        fields = ['url', 'id', 'username']
