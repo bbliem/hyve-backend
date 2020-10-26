@@ -15,6 +15,21 @@ class Section(models.Model):
     """
     text = models.TextField()
 
+    def __str__(self):
+        preview = ''
+        if self.text:
+            preview = self.text
+        elif self.questions:
+            preview = self.questions.first().text
+        # Merge whitespace
+        preview = ' '.join(preview.split())
+        s = f"Section {self.pk}"
+        if preview:
+            s += ': ' + preview[:50]
+            if len(preview) > 50:
+                s += '...'
+        return s
+
 
 class Question(models.Model):
     class Meta:
@@ -67,7 +82,7 @@ class Category(models.Model):
 
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True)
-    lessons = models.ManyToManyField(Lesson)
+    lessons = models.ManyToManyField(Lesson, blank=True)
 
     def __str__(self):
         return self.name
@@ -91,7 +106,7 @@ class User(AbstractBaseUser):
     # )
     is_admin = models.BooleanField(default=False)
 
-    completed_sections = models.ManyToManyField(Section)
+    completed_sections = models.ManyToManyField(Section, blank=True)
 
     objects = managers.UserManager()
 
