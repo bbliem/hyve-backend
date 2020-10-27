@@ -60,4 +60,7 @@ class CategorySerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer)
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
-        fields = ['url', 'id', 'email', 'completed_sections']
+        # fields = ['url', 'id', 'email', 'completed_sections']
+        # Removed 'url' since I disabled the user-specific views and therefore users don't have a URL.
+        # Also, at the moment we don't need 'id'.
+        fields = ['email', 'completed_sections']

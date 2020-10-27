@@ -1,4 +1,7 @@
 from rest_framework import viewsets
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.response import Response
 
 from material import models
 from material import permissions
@@ -30,13 +33,28 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.CategorySerializer
 
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = models.User.objects.all()
-    serializer_class = serializers.UserSerializer
+# Disabled for now. Maybe we'll need it later...
+# class UserViewSet(viewsets.ReadOnlyModelViewSet):
+#     queryset = models.User.objects.all()
+#     serializer_class = serializers.UserSerializer
+#
+#     def get_permissions(self):
+#         if self.action == 'list':
+#             self.permission_classes = [permissions.IsSuperUser]
+#         else:
+#             self.permission_classes = [permissions.IsOwnAccount]
+#         return super().get_permissions()
 
-    def get_permissions(self):
-        if self.action == 'list':
-            self.permission_classes = [permissions.IsSuperUser]
-        else:
-            self.permission_classes = [permissions.IsOwnAccount]
-        return super().get_permissions()
+
+class AuthTokenWithUserData(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        serialized_user = serializers.UserSerializer(user, context={'request': request})
+        return Response({
+            'token': token.key,
+            'user': serialized_user.data,
+        })
