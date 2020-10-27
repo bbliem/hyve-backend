@@ -22,3 +22,6 @@ models.Content.objects.create(lesson=les1, section=txt1, page=1)
 models.Content.objects.create(lesson=les1, section=qz1, page=1)
 models.Content.objects.create(lesson=les1, section=txt2, page=2)
 models.Content.objects.create(lesson=les1, section=txt3, page=3)
+
+models.User.objects.create_superuser(email='foo@example.com', password='foobar123')
+models.User.objects.create_user(email='bar@example.com', password='foobar123')

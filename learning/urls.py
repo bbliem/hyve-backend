@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
+from rest_framework.authtoken.views import obtain_auth_token
 
 from material import views
 
@@ -30,5 +31,8 @@ router.register(r'users', views.UserViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    # Security remark: obtain_auth_token has no throttling; cf.
+    # https://www.django-rest-framework.org/api-guide/authentication/#generating-tokens
+    path('api-token-auth/', obtain_auth_token),
     path('admin/', admin.site.urls),
 ]

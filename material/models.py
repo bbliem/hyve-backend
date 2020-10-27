@@ -104,7 +104,7 @@ class User(AbstractBaseUser):
     #     help_text='Designates whether the user can log into this admin site.',
     #     verbose_name='staff status',
     # )
-    is_admin = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
 
     completed_sections = models.ManyToManyField(Section, blank=True)
 
@@ -126,4 +126,4 @@ class User(AbstractBaseUser):
 
     @property
     def is_staff(self):
-        return self.is_admin
+        return self.is_superuser

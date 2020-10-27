@@ -1,9 +1,8 @@
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 from material import models
-from material import serializers
 from material import permissions
+from material import serializers
 
 
 class SectionViewSet(viewsets.ReadOnlyModelViewSet):
@@ -31,7 +30,13 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.CategorySerializer
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
-    permission_classes = [permissions.IsOwnAccountOrReadOnly]
+
+    def get_permissions(self):
+        if self.action == 'list':
+            self.permission_classes = [permissions.IsSuperUser]
+        else:
+            self.permission_classes = [permissions.IsOwnAccount]
+        return super().get_permissions()

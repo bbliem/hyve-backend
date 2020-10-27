@@ -1,13 +1,17 @@
 from rest_framework import permissions
 
 
-class IsOwnAccountOrReadOnly(permissions.BasePermission):
+class IsSuperUser(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user and request.user.is_superuser
+
+
+class IsOwnAccount(permissions.BasePermission):
     """
-    Custom permission to allow a user to only edit their own account.
+    Allow a user to only view and edit their own account.
     """
     def has_object_permission(self, request, view, obj):
-        # Read permissions are allowed to any request,
-        # so we'll always allow GET, HEAD or OPTIONS requests.
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        return obj == request.user
+        # If we wanted to read other users' data:
+        # if request.method in permissions.SAFE_METHODS:
+        #     return True
+        return request.user and request.user == obj
