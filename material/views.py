@@ -1,7 +1,10 @@
+from django.conf import settings
+from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from rest_framework import viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
+from rest_framework.settings import api_settings
 
 from material import models
 from material import permissions
@@ -47,6 +50,9 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class AuthTokenWithUserData(ObtainAuthToken):
+    # Without setting this explicitly, DRF will just use JSONRenderer and ignore the camel-case renderer that we set.
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
