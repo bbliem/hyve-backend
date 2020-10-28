@@ -106,7 +106,7 @@ class User(AbstractBaseUser):
     # )
     is_superuser = models.BooleanField(default=False)
 
-    completed_sections = models.ManyToManyField(Section, blank=True)
+    completed_sections = models.ManyToManyField(Section, blank=True, through='SectionCompletion')
 
     objects = managers.UserManager()
 
@@ -127,3 +127,14 @@ class User(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_superuser
+
+
+class SectionCompletion(models.Model):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'section'], name='unique_completion_for_user_and_section'),
+        ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    section = models.ForeignKey(Section, on_delete=models.CASCADE)
+    last_modified = models.DateTimeField(auto_now=True)

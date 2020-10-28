@@ -15,3 +15,12 @@ class IsOwnAccount(permissions.BasePermission):
         # if request.method in permissions.SAFE_METHODS:
         #     return True
         return request.user and request.user == obj
+
+
+class IsOwner(permissions.BasePermission):
+    """
+    Object-level permission to only allow owners of an object to access it.
+    Assumes the model instance has a `user` attribute indicating the owner.
+    """
+    def has_object_permission(self, request, view, obj):
+        return obj.user == request.user

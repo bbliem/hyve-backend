@@ -57,6 +57,12 @@ class CategorySerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer)
         }
 
 
+class SectionCompletionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.SectionCompletion
+        fields = ['url', 'id', 'user', 'section', 'last_modified']
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User

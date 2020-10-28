@@ -27,6 +27,7 @@ router.register(r'questions', views.QuestionViewSet)
 router.register(r'sections', views.SectionViewSet)
 # Disabled for now. Maybe we'll need it later...
 # router.register(r'users', views.UserViewSet)
+router.register(r'section_completions', views.SectionCompletionViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

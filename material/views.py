@@ -1,6 +1,6 @@
 from django.conf import settings
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
@@ -64,3 +64,13 @@ class AuthTokenWithUserData(ObtainAuthToken):
             'token': token.key,
             'user': serialized_user.data,
         })
+
+
+class SectionCompletionViewSet(mixins.CreateModelMixin,
+                               mixins.RetrieveModelMixin,
+                               mixins.UpdateModelMixin,
+                               mixins.DestroyModelMixin,
+                               viewsets.GenericViewSet):
+    queryset = models.SectionCompletion.objects.all()
+    serializer_class = serializers.SectionCompletionSerializer
+    permission_classes = [permissions.IsOwner]
