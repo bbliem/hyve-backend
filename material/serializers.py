@@ -62,11 +62,13 @@ class SectionCompletionSerializer(serializers.ModelSerializer):
         model = models.SectionCompletion
         fields = ['url', 'id', 'user', 'section', 'last_modified']
 
+    def validate_user(self, value):
+        if value != self.context['request'].user:
+            raise serializers.ValidationError("User specified in SectionCompletion object is not yourself")
+        return value
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
-        # fields = ['url', 'id', 'email', 'completed_sections']
-        # Removed 'url' since I disabled the user-specific views and therefore users don't have a URL.
-        # Also, at the moment we don't need 'id'.
-        fields = ['email', 'completed_sections']
+        fields = ['url', 'id', 'email', 'completed_sections']

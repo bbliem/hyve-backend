@@ -3,6 +3,7 @@ from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from rest_framework import viewsets, mixins
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 
@@ -36,17 +37,16 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.CategorySerializer
 
 
-# Disabled for now. Maybe we'll need it later...
-# class UserViewSet(viewsets.ReadOnlyModelViewSet):
-#     queryset = models.User.objects.all()
-#     serializer_class = serializers.UserSerializer
-#
-#     def get_permissions(self):
-#         if self.action == 'list':
-#             self.permission_classes = [permissions.IsSuperUser]
-#         else:
-#             self.permission_classes = [permissions.IsOwnAccount]
-#         return super().get_permissions()
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.User.objects.all()
+    serializer_class = serializers.UserSerializer
+
+    def get_permissions(self):
+        if self.action == 'list':
+            self.permission_classes = [permissions.IsSuperUser]
+        else:
+            self.permission_classes = [permissions.IsOwnAccount]
+        return super().get_permissions()
 
 
 class AuthTokenWithUserData(ObtainAuthToken):
