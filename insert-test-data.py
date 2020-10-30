@@ -2,14 +2,17 @@
 from material import models
 
 
-cat1 = models.Category.objects.create(name="Category 1")
-les1 = models.Lesson.objects.create(name="Lesson 1")
-les2 = models.Lesson.objects.create(name="Lesson 2")
-cat1.lessons.set([les1, les2])
+cat1 = models.Category.objects.create(name="Category 1", description="Description of Category 1")
+les1 = models.Lesson.objects.create(name="Lesson 1", description="Description of Lesson 1")
+les2 = models.Lesson.objects.create(name="Lesson 2", description="Description of Lesson 2")
+les3 = models.Lesson.objects.create(name="Lesson 3", description="Description of Lesson 3")
+les4 = models.Lesson.objects.create(name="Lesson 4", description="Description of Lesson 4")
+les5 = models.Lesson.objects.create(name="Lesson 5", description="Description of Lesson 5")
+cat1.lessons.set([les1, les2, les3, les4, les5])
 
-cat2 = models.Category.objects.create(name="Category 2")
-les3 = models.Lesson.objects.create(name="Lesson 3")
-cat2.lessons.set([les2, les3])
+cat2 = models.Category.objects.create(name="Category 2", description="Description of Category 2")
+les6 = models.Lesson.objects.create(name="Lesson 6", description="Description of Lesson 6")
+cat2.lessons.set([les2, les6])
 
 txt1 = models.Section.objects.create(text="foo")
 txt2 = models.Section.objects.create(text="bar")
