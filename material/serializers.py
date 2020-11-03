@@ -4,7 +4,7 @@ from rest_framework import serializers
 from material import models
 
 
-class AnswerSerializer(serializers.ModelSerializer):
+class AnswerSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Answer
         fields = ['url', 'id', 'question', 'text', 'correct']
@@ -57,7 +57,7 @@ class CategorySerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer)
         }
 
 
-class SectionCompletionSerializer(serializers.ModelSerializer):
+class SectionCompletionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.SectionCompletion
         fields = ['url', 'id', 'user', 'section', 'last_modified']

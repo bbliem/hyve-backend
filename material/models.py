@@ -13,7 +13,7 @@ class Section(models.Model):
     of work to get usable in the Django admin, and it may be difficult for serialization. See, e.g.,
     https://stackoverflow.com/questions/13907211/genericforeignkey-and-admin-in-django
     """
-    text = models.TextField()
+    text = models.TextField(blank=True)
 
     def __str__(self):
         preview = ''
