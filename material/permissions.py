@@ -6,6 +6,13 @@ class IsSuperUser(permissions.BasePermission):
         return request.user and request.user.is_superuser
 
 
+class IsSuperUserOrReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return request.user and request.user.is_superuser
+
+
 class IsOwnAccount(permissions.BasePermission):
     """
     Allow a user to only view and edit their own account.

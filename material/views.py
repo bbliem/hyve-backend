@@ -12,9 +12,10 @@ from material import permissions
 from material import serializers
 
 
-class SectionViewSet(viewsets.ReadOnlyModelViewSet):
+class SectionViewSet(viewsets.ModelViewSet):
     queryset = models.Section.objects.all()
     serializer_class = serializers.SectionSerializer
+    permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
 class QuestionViewSet(viewsets.ReadOnlyModelViewSet):
