@@ -146,7 +146,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = decouple.config('STATIC_URL', default='/static/')
 STATIC_ROOT = decouple.config('STATIC_ROOT', default=None)
 
 CORS_ALLOWED_ORIGINS = decouple.config('CORS_ALLOWED_ORIGINS', cast=decouple.Csv())
