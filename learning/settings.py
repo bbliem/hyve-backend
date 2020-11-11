@@ -149,4 +149,7 @@ USE_TZ = True
 STATIC_URL = decouple.config('STATIC_URL', default='/static/')
 STATIC_ROOT = decouple.config('STATIC_ROOT', default=None)
 
+# If serving from a subdirectory, you may want to set FORCE_SCRIPT_NAME
+FORCE_SCRIPT_NAME = decouple.config('FORCE_SCRIPT_NAME', default=None)
+
 CORS_ALLOWED_ORIGINS = decouple.config('CORS_ALLOWED_ORIGINS', cast=decouple.Csv())
