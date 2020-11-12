@@ -153,3 +153,10 @@ STATIC_ROOT = decouple.config('STATIC_ROOT', default=None)
 FORCE_SCRIPT_NAME = decouple.config('FORCE_SCRIPT_NAME', default=None)
 
 CORS_ALLOWED_ORIGINS = decouple.config('CORS_ALLOWED_ORIGINS', cast=decouple.Csv())
+
+# If Django is behind a reverse proxy, set USE_PROXY_HEADERS to true to make
+# Django use the X-Forwarded-Proto and X-Forwarded-Host headers for generating
+# URLs. (Make sure your reverse proxy sets these headers. See the README.)
+if decouple.config('USE_PROXY_HEADERS', default=False, cast=bool):
+    USE_X_FORWARDED_HOST = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
