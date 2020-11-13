@@ -4,6 +4,12 @@ from rest_framework import serializers
 from material import models
 
 
+class StaticPageSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+    class Meta:
+        model = models.StaticPage
+        fields = ['url', 'id', 'title', 'content']
+
+
 class AnswerSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Answer

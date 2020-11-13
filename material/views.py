@@ -12,6 +12,12 @@ from material import permissions
 from material import serializers
 
 
+class StaticPageViewSet(viewsets.ModelViewSet):
+    queryset = models.StaticPage.objects.all()
+    serializer_class = serializers.StaticPageSerializer
+    permission_classes = [permissions.IsSuperUserOrReadOnly]
+
+
 class SectionViewSet(viewsets.ModelViewSet):
     queryset = models.Section.objects.all()
     serializer_class = serializers.SectionSerializer

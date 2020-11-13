@@ -4,6 +4,14 @@ from django.db import models
 from material import managers
 
 
+class StaticPage(models.Model):
+    title = models.CharField(max_length=250)
+    content = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.title
+
+
 class Section(models.Model):
     """A section is part of a lesson and can be either a text or a quiz.
 

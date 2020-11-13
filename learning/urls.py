@@ -26,6 +26,7 @@ router.register(r'lessons', views.LessonViewSet)
 router.register(r'questions', views.QuestionViewSet)
 router.register(r'sections', views.SectionViewSet)
 router.register(r'section-completions', views.SectionCompletionViewSet)
+router.register(r'static-pages', views.StaticPageViewSet)
 router.register(r'users', views.UserViewSet)
 
 urlpatterns = [
