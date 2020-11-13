@@ -102,6 +102,7 @@ class User(AbstractBaseUser):
         verbose_name='email address',
         unique=True,
     )
+    name = models.CharField(max_length=100, blank=True)
     is_active = models.BooleanField(
         default=True,
         help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.',

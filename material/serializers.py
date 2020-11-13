@@ -77,4 +77,4 @@ class SectionCompletionSerializer(FlexFieldsSerializerMixin, serializers.ModelSe
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
-        fields = ['url', 'id', 'email', 'is_superuser', 'completed_sections']
+        fields = ['url', 'id', 'email', 'name', 'is_superuser', 'completed_sections']
