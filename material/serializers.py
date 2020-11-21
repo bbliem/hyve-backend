@@ -7,19 +7,19 @@ from material import models
 class StaticPageSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.StaticPage
-        fields = ['url', 'id', 'title', 'content']
+        fields = ['url', 'id', 'title_en', 'title_fi', 'content_en', 'content_fi']
 
 
 class AnswerSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Answer
-        fields = ['url', 'id', 'question', 'text', 'correct']
+        fields = ['url', 'id', 'question', 'text_en', 'text_fi', 'correct']
 
 
 class QuestionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Question
-        fields = ['url', 'id', 'section', 'text', 'answers']
+        fields = ['url', 'id', 'section', 'text_en', 'text_fi', 'answers']
         expandable_fields = {
             'answers': (AnswerSerializer, {'source': 'answers', 'many': True, 'omit': ['question']})
         }
@@ -28,7 +28,7 @@ class QuestionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer)
 class SectionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Section
-        fields = ['url', 'id', 'text', 'questions']
+        fields = ['url', 'id', 'text_en', 'text_fi', 'questions']
         expandable_fields = {
             'questions': (QuestionSerializer, {'source': 'questions', 'many': True})
         }
@@ -48,7 +48,7 @@ class LessonSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = models.Lesson
-        fields = ['url', 'id', 'name', 'description', 'contents']
+        fields = ['url', 'id', 'name_en', 'name_fi', 'description_en', 'description_fi', 'contents']
         expandable_fields = {
             'contents': (ContentSerializer, {'source': 'content_set', 'many': True, 'omit': ['lesson']})
         }
@@ -57,7 +57,7 @@ class LessonSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
 class CategorySerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Category
-        fields = ['url', 'id', 'name', 'description', 'lessons']
+        fields = ['url', 'id', 'name_en', 'name_fi', 'description_en', 'description_fi', 'lessons']
         expandable_fields = {
             'lessons': (LessonSerializer, {'many': True})
         }

@@ -1,9 +1,6 @@
-from django.conf import settings
-from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from rest_framework import viewsets, mixins
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 

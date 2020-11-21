@@ -5,11 +5,13 @@ from material import managers
 
 
 class StaticPage(models.Model):
-    title = models.CharField(max_length=250)
-    content = models.TextField(blank=True)
+    title_en = models.CharField(max_length=250, blank=True)
+    title_fi = models.CharField(max_length=250, blank=True)
+    content_en = models.TextField(blank=True)
+    content_fi = models.TextField(blank=True)
 
     def __str__(self):
-        return self.title
+        return self.title_en or self.title_fi
 
 
 class Section(models.Model):
@@ -21,14 +23,15 @@ class Section(models.Model):
     of work to get usable in the Django admin, and it may be difficult for serialization. See, e.g.,
     https://stackoverflow.com/questions/13907211/genericforeignkey-and-admin-in-django
     """
-    text = models.TextField(blank=True)
+    text_en = models.TextField(blank=True)
+    text_fi = models.TextField(blank=True)
 
     def __str__(self):
         preview = ''
-        if self.text:
-            preview = self.text
+        if self.text_en:
+            preview = self.text_en
         elif self.questions:
-            preview = self.questions.first().text
+            preview = self.questions.first().text_en
         # Merge whitespace
         preview = ' '.join(preview.split())
         s = f"Section {self.pk}"
@@ -43,11 +46,12 @@ class Question(models.Model):
     class Meta:
         order_with_respect_to = 'section'
 
-    text = models.CharField(max_length=250)
+    text_en = models.CharField(max_length=250, blank=True)
+    text_fi = models.CharField(max_length=250, blank=True)
     section = models.ForeignKey(Section, on_delete=models.CASCADE, related_name='questions')
 
     def __str__(self):
-        return self.text
+        return self.text_en or self.text_fi
 
 
 class Answer(models.Model):
@@ -55,20 +59,23 @@ class Answer(models.Model):
         order_with_respect_to = 'question'
 
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
-    text = models.CharField(max_length=250)
+    text_en = models.CharField(max_length=250, blank=True)
+    text_fi = models.CharField(max_length=250, blank=True)
     correct = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.text
+        return self.text_en or self.text_fi
 
 
 class Lesson(models.Model):
-    name = models.CharField(max_length=150)
-    description = models.TextField(blank=True)
+    name_en = models.CharField(max_length=150, blank=True)
+    name_fi = models.CharField(max_length=150, blank=True)
+    description_en = models.TextField(blank=True)
+    description_fi = models.TextField(blank=True)
     sections = models.ManyToManyField(Section, through='Content')
 
     def __str__(self):
-        return self.name
+        return self.name_en or self.name_fi
 
 
 class Content(models.Model):
@@ -88,12 +95,14 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = 'categories'
 
-    name = models.CharField(max_length=150)
-    description = models.TextField(blank=True)
+    name_en = models.CharField(max_length=150, blank=True)
+    name_fi = models.CharField(max_length=150, blank=True)
+    description_en = models.TextField(blank=True)
+    description_fi = models.TextField(blank=True)
     lessons = models.ManyToManyField(Lesson, blank=True)
 
     def __str__(self):
-        return self.name
+        return self.name_en or self.name_fi
 
 
 class User(AbstractBaseUser):
