@@ -74,8 +74,11 @@ class SectionCompletionSerializer(FlexFieldsSerializerMixin, serializers.ModelSe
         return value
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.User
         fields = ['url', 'id', 'email', 'name', 'is_superuser', 'completed_sections']
         read_only_fields = ['is_superuser']
+        expandable_fields = {
+            'section_completions': (SectionCompletionSerializer, {'source': 'sectioncompletion_set', 'many': True, 'omit': ['user']})
+        }
