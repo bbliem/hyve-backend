@@ -21,24 +21,28 @@ class SectionViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
-class QuestionViewSet(viewsets.ReadOnlyModelViewSet):
+class QuestionViewSet(viewsets.ModelViewSet):
     queryset = models.Question.objects.all()
     serializer_class = serializers.QuestionSerializer
+    permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
-class AnswerViewSet(viewsets.ReadOnlyModelViewSet):
+class AnswerViewSet(viewsets.ModelViewSet):
     queryset = models.Answer.objects.all()
     serializer_class = serializers.AnswerSerializer
+    permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
-class LessonViewSet(viewsets.ReadOnlyModelViewSet):
+class LessonViewSet(viewsets.ModelViewSet):
     queryset = models.Lesson.objects.all()
     serializer_class = serializers.LessonSerializer
+    permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
-class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+class CategoryViewSet(viewsets.ModelViewSet):
     queryset = models.Category.objects.all()
     serializer_class = serializers.CategorySerializer
+    permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
