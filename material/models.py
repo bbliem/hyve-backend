@@ -62,6 +62,8 @@ class Answer(models.Model):
     text_en = models.CharField(max_length=250, blank=True)
     text_fi = models.CharField(max_length=250, blank=True)
     correct = models.BooleanField(default=False)
+    explanation_en = models.CharField(max_length=250, blank=True)
+    explanation_fi = models.CharField(max_length=250, blank=True)
 
     def __str__(self):
         return self.text_en or self.text_fi

@@ -13,7 +13,7 @@ class StaticPageSerializer(FlexFieldsSerializerMixin, serializers.ModelSerialize
 class AnswerSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Answer
-        fields = ['url', 'id', 'question', 'text_en', 'text_fi', 'correct']
+        fields = ['url', 'id', 'question', 'text_en', 'text_fi', 'correct', 'explanation_en', 'explanation_fi']
 
 
 class QuestionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
@@ -21,7 +21,7 @@ class QuestionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer)
         model = models.Question
         fields = ['url', 'id', 'section', 'text_en', 'text_fi', 'answers']
         expandable_fields = {
-            'answers': (AnswerSerializer, {'source': 'answers', 'many': True, 'omit': ['question']})
+            'answers': (AnswerSerializer, {'source': 'answers', 'many': True})
         }
 
 
