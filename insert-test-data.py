@@ -26,8 +26,17 @@ models.Content.objects.create(lesson=les1, section=qz1, page=1)
 models.Content.objects.create(lesson=les1, section=txt2, page=2)
 models.Content.objects.create(lesson=les1, section=txt3, page=3)
 
-models.User.objects.create_superuser(email='foo@example.com', password='foobar123', name='Maija')
-models.User.objects.create_user(email='bar@example.com', password='foobar123', name='Matti')
+org1 = models.Organization.objects.create(name="Organization 1")
+org1.lessons.set([les1])
+
+org2 = models.Organization.objects.create(name="Organization 2")
+org2.lessons.set([les2])
+
+user1 = models.User.objects.create_superuser(email='foo@example.com', password='foobar123', name='Maija')
+user2 = models.User.objects.create_user(email='bar@example.com', password='foobar123', name='Matti')
+
+models.Membership.objects.create(user=user1, organization=org1, is_supervisor=False)
+models.Membership.objects.create(user=user2, organization=org2, is_supervisor=True)
 
 # Index page
 models.StaticPage.objects.create(title_en='Hello', content_en='<p>Hello world</p>')

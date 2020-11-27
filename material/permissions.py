@@ -31,3 +31,11 @@ class IsOwner(permissions.BasePermission):
     """
     def has_object_permission(self, request, view, obj):
         return obj.user == request.user
+
+
+class IsMemberOfThisOrganization(permissions.BasePermission):
+    """
+    Object-level permission to only allow members of an organization to access the organization.
+    """
+    def has_object_permission(self, request, view, obj):
+        return request.user.is_authenticated and obj in request.user.organization_set.all()

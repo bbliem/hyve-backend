@@ -72,11 +72,46 @@ class SectionCompletionSerializer(FlexFieldsSerializerMixin, serializers.ModelSe
         return value
 
 
+class MembershipSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+    class Meta:
+        model = models.Membership
+        fields = ['id', 'user', 'organization', 'is_supervisor']
+
+
+class OrganizationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Organization model meant for users that are not supervisors of the organization.
+
+    We deliberately don't include the organization's users in the fields because only supervisors should see those.
+    Neither do we include the membership_set in the expandable fields. This is because otherwise people who are not
+    supervisors but authorized to see an organization could see its members because by expanding the field in
+    Organization, the view for Membership, which checks permissions, is not accessed. If you have made sure that the
+    accessing user is a supervisor, you can use OrganizationSerializerWithMembers instead to get all the information.
+    """
+    class Meta:
+        model = models.Organization
+        fields = ['url', 'id', 'name', 'lessons']
+
+
+class OrganizationSerializerWithMembers(serializers.ModelSerializer):
+    """
+    Serializer for the Organization model meant for supervisors of the organization.
+    """
+    class Meta:
+        model = models.Organization
+        fields = ['url', 'id', 'name', 'users', 'lessons']
+
+    expandable_fields = {
+        'memberships': (MembershipSerializer, {'source': 'membership_set', 'many': True, 'omit': ['organization']})
+    }
+
+
 class UserSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.User
         fields = ['url', 'id', 'email', 'name', 'is_superuser', 'completed_sections']
         read_only_fields = ['is_superuser']
         expandable_fields = {
-            'section_completions': (SectionCompletionSerializer, {'source': 'sectioncompletion_set', 'many': True, 'omit': ['user']})
+            'organizations': (OrganizationSerializer, {'source': 'organization_set', 'many': True}),
+            'section_completions': (SectionCompletionSerializer, {'source': 'sectioncompletion_set', 'many': True, 'omit': ['user']}),
         }

@@ -158,3 +158,23 @@ class SectionCompletion(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
     last_modified = models.DateTimeField(auto_now=True)
+
+
+class Organization(models.Model):
+    name = models.CharField(max_length=100, blank=True)
+    users = models.ManyToManyField(User, through='Membership')
+    lessons = models.ManyToManyField(Lesson)
+
+    def __str__(self):
+        return self.name
+
+
+class Membership(models.Model):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'organization'], name='no_duplicate_user_per_organization'),
+        ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    is_supervisor = models.BooleanField(default=False)

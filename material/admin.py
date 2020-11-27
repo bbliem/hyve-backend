@@ -11,6 +11,15 @@ admin.site.register(models.StaticPage)
 admin.site.register(models.Category)
 
 
+class MembershipInline(admin.TabularInline):
+    model = models.Membership
+
+
+@admin.register(models.Organization)
+class LessonAdmin(admin.ModelAdmin):
+    inlines = [MembershipInline]
+
+
 class AnswerInline(admin.TabularInline):
     model = models.Answer
 
