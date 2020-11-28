@@ -93,7 +93,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
         fields = ['url', 'id', 'name', 'lessons']
 
 
-class OrganizationSerializerWithMembers(serializers.ModelSerializer):
+class OrganizationSerializerWithMembers(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     """
     Serializer for the Organization model meant for supervisors of the organization.
     """
