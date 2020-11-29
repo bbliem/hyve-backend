@@ -46,7 +46,7 @@ class ContentSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
 class LessonSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Lesson
-        fields = ['url', 'id', 'name_en', 'name_fi', 'description_en', 'description_fi', 'sections']
+        fields = ['url', 'id', 'name_en', 'name_fi', 'description_en', 'description_fi', 'categories', 'sections']
         expandable_fields = {
             'contents': (ContentSerializer, {'source': 'content_set', 'many': True, 'omit': ['lesson']})
         }
@@ -78,7 +78,7 @@ class MembershipSerializer(FlexFieldsSerializerMixin, serializers.ModelSerialize
         fields = ['id', 'user', 'organization', 'is_supervisor']
 
 
-class OrganizationSerializer(serializers.ModelSerializer):
+class OrganizationSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     """
     Serializer for the Organization model meant for users that are not supervisors of the organization.
 
@@ -92,6 +92,10 @@ class OrganizationSerializer(serializers.ModelSerializer):
         model = models.Organization
         fields = ['url', 'id', 'name', 'lessons']
 
+    expandable_fields = {
+        'lessons': (LessonSerializer, {'source': 'lessons', 'many': True}),
+    }
+
 
 class OrganizationSerializerWithMembers(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     """
@@ -102,7 +106,8 @@ class OrganizationSerializerWithMembers(FlexFieldsSerializerMixin, serializers.M
         fields = ['url', 'id', 'name', 'users', 'lessons']
 
     expandable_fields = {
-        'memberships': (MembershipSerializer, {'source': 'membership_set', 'many': True, 'omit': ['organization']})
+        'lessons': (LessonSerializer, {'source': 'lessons', 'many': True}),
+        'memberships': (MembershipSerializer, {'source': 'membership_set', 'many': True, 'omit': ['organization']}),
     }
 
 

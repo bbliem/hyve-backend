@@ -101,7 +101,7 @@ class Category(models.Model):
     name_fi = models.CharField(max_length=150, blank=True)
     description_en = models.TextField(blank=True)
     description_fi = models.TextField(blank=True)
-    lessons = models.ManyToManyField(Lesson, blank=True)
+    lessons = models.ManyToManyField(Lesson, blank=True, related_name='categories')
 
     def __str__(self):
         return self.name_en or self.name_fi

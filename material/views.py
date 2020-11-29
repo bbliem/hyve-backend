@@ -90,17 +90,18 @@ class SectionCompletionViewSet(mixins.CreateModelMixin,
 class OrganizationViewSet(mixins.RetrieveModelMixin,
                           viewsets.GenericViewSet):
     queryset = models.Organization.objects.all()
-    permission_classes = [permissions.IsMemberOfThisOrganization]
+    # permission_classes = [permissions.IsSupervisorOfThisOrganizationOrReadOnly]
 
     def get_serializer_class(self):
         """
         Return serializer that includes membership data iff retrieving a specific organization of which the
         requesting user is a supervisor.
         """
-        if self.action == 'retrieve':
-            # QuerySet.get() would throw an exception if there is not exactly one matching object, but the permission
-            # class we set above should make sure that this never happens.
-            membership = self.request.user.membership_set.get(organization=self.get_object())
-            if membership.is_supervisor:
-                return serializers.OrganizationSerializerWithMembers
+        if self.action == 'retrieve' and self.request.user.is_authenticated:
+            try:
+                membership = self.request.user.membership_set.get(organization=self.get_object())
+                if membership.is_supervisor:
+                    return serializers.OrganizationSerializerWithMembers
+            except models.Membership.DoesNotExist:
+                pass
         return serializers.OrganizationSerializer
