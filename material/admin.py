@@ -51,6 +51,10 @@ class SectionCompletionInline(admin.TabularInline):
     model = models.SectionCompletion
 
 
+class QuestionResponseInline(admin.TabularInline):
+    model = models.QuestionResponse
+
+
 class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
     fields, plus a repeated password.
@@ -101,7 +105,7 @@ class UserAdmin(BaseUserAdmin):
     # The forms to add and change user instances
     form = UserChangeForm
     add_form = UserCreationForm
-    inlines = [SectionCompletionInline]
+    inlines = [SectionCompletionInline, QuestionResponseInline]
 
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin

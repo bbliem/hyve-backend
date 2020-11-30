@@ -160,6 +160,18 @@ class SectionCompletion(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
 
+class QuestionResponse(models.Model):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'answer'], name='unique_response_for_user_and_answer'),
+        ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+    response = models.BooleanField()
+    last_modified = models.DateTimeField(auto_now=True)
+
+
 class Organization(models.Model):
     name = models.CharField(max_length=100, blank=True)
     users = models.ManyToManyField(User, through='Membership')

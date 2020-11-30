@@ -87,6 +87,16 @@ class SectionCompletionViewSet(mixins.CreateModelMixin,
     permission_classes = [permissions.IsOwner]
 
 
+class QuestionResponseViewSet(mixins.CreateModelMixin,
+                              mixins.RetrieveModelMixin,
+                              mixins.UpdateModelMixin,
+                              mixins.DestroyModelMixin,
+                              viewsets.GenericViewSet):
+    queryset = models.QuestionResponse.objects.all()
+    serializer_class = serializers.QuestionResponseSerializer
+    permission_classes = [permissions.IsOwner]
+
+
 class OrganizationViewSet(mixins.RetrieveModelMixin,
                           viewsets.GenericViewSet):
     queryset = models.Organization.objects.all()

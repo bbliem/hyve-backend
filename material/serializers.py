@@ -72,6 +72,17 @@ class SectionCompletionSerializer(FlexFieldsSerializerMixin, serializers.ModelSe
         return value
 
 
+class QuestionResponseSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+    class Meta:
+        model = models.QuestionResponse
+        fields = ['url', 'id', 'user', 'answer', 'response', 'last_modified']
+
+    def validate_user(self, value):
+        if value != self.context['request'].user:
+            raise serializers.ValidationError("User specified in QuestionResponse object is not yourself")
+        return value
+
+
 class MembershipSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Membership
@@ -119,4 +130,5 @@ class UserSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
         expandable_fields = {
             'organizations': (OrganizationSerializer, {'source': 'organization_set', 'many': True}),
             'section_completions': (SectionCompletionSerializer, {'source': 'sectioncompletion_set', 'many': True, 'omit': ['user']}),
+            'question_responses': (QuestionResponseSerializer, {'source': 'questionresponse_set', 'many': True, 'omit': ['user']}),
         }
