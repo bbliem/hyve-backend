@@ -131,4 +131,5 @@ class UserSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
             'organizations': (OrganizationSerializer, {'source': 'organization_set', 'many': True}),
             'section_completions': (SectionCompletionSerializer, {'source': 'sectioncompletion_set', 'many': True, 'omit': ['user']}),
             'question_responses': (QuestionResponseSerializer, {'source': 'questionresponse_set', 'many': True, 'omit': ['user']}),
+            'memberships': (MembershipSerializer, {'source': 'membership_set', 'many': True, 'omit': ['user']}),
         }

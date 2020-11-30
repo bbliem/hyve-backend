@@ -70,7 +70,9 @@ class AuthTokenWithUserData(ObtainAuthToken):
         serialized_user = serializers.UserSerializer(user,
                                                      context={'request': request},
                                                      omit=['completed_sections'],
-                                                     expand=['section_completions'])
+                                                     expand=['memberships',
+                                                             'question_responses',
+                                                             'section_completions'])
         return Response({
             'token': token.key,
             'user': serialized_user.data,
