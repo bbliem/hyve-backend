@@ -25,12 +25,19 @@ class MultipleChoiceQuestionSerializer(FlexFieldsSerializerMixin, serializers.Mo
         }
 
 
+class OpenQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.OpenQuestion
+        fields = ['url', 'id', 'section', 'text_en', 'text_fi']
+
+
 class SectionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Section
-        fields = ['url', 'id', 'text_en', 'text_fi', 'multiple_choice_questions']
+        fields = ['url', 'id', 'text_en', 'text_fi', 'multiple_choice_questions', 'open_questions']
         expandable_fields = {
-            'multiple_choice_questions': (MultipleChoiceQuestionSerializer, {'source': 'multiple_choice_questions', 'many': True})
+            'multiple_choice_questions': (MultipleChoiceQuestionSerializer, {'source': 'multiple_choice_questions', 'many': True}),
+            'open_questions': (OpenQuestionSerializer, {'source': 'open_questions', 'many': True}),
         }
 
 
@@ -130,6 +137,6 @@ class UserSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
         expandable_fields = {
             'organizations': (OrganizationSerializer, {'source': 'organization_set', 'many': True}),
             'section_completions': (SectionCompletionSerializer, {'source': 'sectioncompletion_set', 'many': True, 'omit': ['user']}),
-            'multiple_choice_responses': (MultipleChoiceResponseSerializer, {'source': 'multiple_choice_response_set', 'many': True, 'omit': ['user']}),
+            'multiple_choice_responses': (MultipleChoiceResponseSerializer, {'source': 'multiplechoiceresponse_set', 'many': True, 'omit': ['user']}),
             'memberships': (MembershipSerializer, {'source': 'membership_set', 'many': True, 'omit': ['user']}),
         }

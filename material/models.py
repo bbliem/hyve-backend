@@ -15,7 +15,7 @@ class StaticPage(models.Model):
 
 
 class Section(models.Model):
-    """A section is part of a lesson and can be either a text or a quiz.
+    """A section is part of a lesson and can contain a text, multiple-choice questions or open questions.
 
     Since the relational DB model cannot model polymorphism very well, we pack all possible fields into the same model.
     One alternative would be to use Django's generic foreign keys as described in
@@ -32,6 +32,8 @@ class Section(models.Model):
             preview = self.text_en
         elif self.multiple_choice_questions:
             preview = self.multiple_choice_questions.first().text_en
+        elif self.open_questions:
+            preview = self.open_questions.first().text_en
         # Merge whitespace
         preview = ' '.join(preview.split())
         s = f"Section {self.pk}"
@@ -64,6 +66,18 @@ class MultipleChoiceAnswer(models.Model):
     correct = models.BooleanField(default=False)
     explanation_en = models.CharField(max_length=250, blank=True)
     explanation_fi = models.CharField(max_length=250, blank=True)
+
+    def __str__(self):
+        return self.text_en or self.text_fi
+
+
+class OpenQuestion(models.Model):
+    class Meta:
+        order_with_respect_to = 'section'
+
+    text_en = models.CharField(max_length=250, blank=True)
+    text_fi = models.CharField(max_length=250, blank=True)
+    section = models.ForeignKey(Section, on_delete=models.CASCADE, related_name='open_questions')
 
     def __str__(self):
         return self.text_en or self.text_fi

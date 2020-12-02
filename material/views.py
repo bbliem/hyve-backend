@@ -33,6 +33,12 @@ class MultipleChoiceAnswerViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
+class OpenQuestionViewSet(viewsets.ModelViewSet):
+    queryset = models.OpenQuestion.objects.all()
+    serializer_class = serializers.OpenQuestionSerializer
+    permission_classes = [permissions.IsSuperUserOrReadOnly]
+
+
 class LessonViewSet(viewsets.ModelViewSet):
     queryset = models.Lesson.objects.all()
     serializer_class = serializers.LessonSerializer

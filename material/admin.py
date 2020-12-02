@@ -33,9 +33,13 @@ class MultipleChoiceQuestionInline(admin.TabularInline):
     model = models.MultipleChoiceQuestion
 
 
+class OpenQuestionInline(admin.TabularInline):
+    model = models.OpenQuestion
+
+
 @admin.register(models.Section)
 class SectionAdmin(admin.ModelAdmin):
-    inlines = [MultipleChoiceQuestionInline]
+    inlines = [MultipleChoiceQuestionInline, OpenQuestionInline]
 
 
 class ContentInline(admin.TabularInline):
