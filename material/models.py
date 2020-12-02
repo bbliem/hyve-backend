@@ -186,6 +186,18 @@ class MultipleChoiceResponse(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
 
+class OpenQuestionResponse(models.Model):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'question'], name='unique_response_for_user_and_question'),
+        ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(OpenQuestion, on_delete=models.CASCADE)
+    response = models.TextField()
+    last_modified = models.DateTimeField(auto_now=True)
+
+
 class Organization(models.Model):
     name = models.CharField(max_length=100, blank=True)
     users = models.ManyToManyField(User, through='Membership')

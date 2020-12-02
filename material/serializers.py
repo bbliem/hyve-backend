@@ -90,6 +90,17 @@ class MultipleChoiceResponseSerializer(FlexFieldsSerializerMixin, serializers.Mo
         return value
 
 
+class OpenQuestionResponseSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+    class Meta:
+        model = models.OpenQuestionResponse
+        fields = ['url', 'id', 'user', 'question', 'response', 'last_modified']
+
+    def validate_user(self, value):
+        if value != self.context['request'].user:
+            raise serializers.ValidationError("User specified in OpenQuestionResponse object is not yourself")
+        return value
+
+
 class MembershipSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Membership
@@ -138,5 +149,6 @@ class UserSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
             'organizations': (OrganizationSerializer, {'source': 'organization_set', 'many': True}),
             'section_completions': (SectionCompletionSerializer, {'source': 'sectioncompletion_set', 'many': True, 'omit': ['user']}),
             'multiple_choice_responses': (MultipleChoiceResponseSerializer, {'source': 'multiplechoiceresponse_set', 'many': True, 'omit': ['user']}),
+            'open_question_responses': (OpenQuestionResponseSerializer, {'source': 'openquestionresponse_set', 'many': True, 'omit': ['user']}),
             'memberships': (MembershipSerializer, {'source': 'membership_set', 'many': True, 'omit': ['user']}),
         }

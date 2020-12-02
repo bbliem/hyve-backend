@@ -59,6 +59,10 @@ class MultipleChoiceResponseInline(admin.TabularInline):
     model = models.MultipleChoiceResponse
 
 
+class OpenQuestionResponseInline(admin.TabularInline):
+    model = models.OpenQuestionResponse
+
+
 class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
     fields, plus a repeated password.
@@ -109,7 +113,7 @@ class UserAdmin(BaseUserAdmin):
     # The forms to add and change user instances
     form = UserChangeForm
     add_form = UserCreationForm
-    inlines = [SectionCompletionInline, MultipleChoiceResponseInline]
+    inlines = [SectionCompletionInline, MultipleChoiceResponseInline, OpenQuestionResponseInline]
 
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin

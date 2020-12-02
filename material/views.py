@@ -78,6 +78,7 @@ class AuthTokenWithUserData(ObtainAuthToken):
                                                      omit=['completed_sections'],
                                                      expand=['memberships',
                                                              'multiple_choice_responses',
+                                                             'open_question_responses',
                                                              'section_completions'])
         return Response({
             'token': token.key,
@@ -102,6 +103,16 @@ class MultipleChoiceResponseViewSet(mixins.CreateModelMixin,
                               viewsets.GenericViewSet):
     queryset = models.MultipleChoiceResponse.objects.all()
     serializer_class = serializers.MultipleChoiceResponseSerializer
+    permission_classes = [permissions.IsOwner]
+
+
+class OpenQuestionResponseViewSet(mixins.CreateModelMixin,
+                                  mixins.RetrieveModelMixin,
+                                  mixins.UpdateModelMixin,
+                                  mixins.DestroyModelMixin,
+                                  viewsets.GenericViewSet):
+    queryset = models.OpenQuestionResponse.objects.all()
+    serializer_class = serializers.OpenQuestionResponseSerializer
     permission_classes = [permissions.IsOwner]
 
 
