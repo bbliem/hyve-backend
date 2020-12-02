@@ -20,12 +20,12 @@ from rest_framework import routers
 from material import views
 
 router = routers.DefaultRouter()
-router.register(r'answers', views.AnswerViewSet)
 router.register(r'categories', views.CategoryViewSet)
 router.register(r'lessons', views.LessonViewSet)
 router.register(r'organizations', views.OrganizationViewSet)
-router.register(r'questions', views.QuestionViewSet)
-router.register(r'question-responses', views.QuestionResponseViewSet)
+router.register(r'multiple-choice-answers', views.MultipleChoiceAnswerViewSet)
+router.register(r'multiple-choice-questions', views.MultipleChoiceQuestionViewSet)
+router.register(r'multiple-choice-responses', views.MultipleChoiceResponseViewSet)
 router.register(r'sections', views.SectionViewSet)
 router.register(r'section-completions', views.SectionCompletionViewSet)
 router.register(r'static-pages', views.StaticPageViewSet)

@@ -30,8 +30,8 @@ class Section(models.Model):
         preview = ''
         if self.text_en:
             preview = self.text_en
-        elif self.questions:
-            preview = self.questions.first().text_en
+        elif self.multiple_choice_questions:
+            preview = self.multiple_choice_questions.first().text_en
         # Merge whitespace
         preview = ' '.join(preview.split())
         s = f"Section {self.pk}"
@@ -42,23 +42,23 @@ class Section(models.Model):
         return s
 
 
-class Question(models.Model):
+class MultipleChoiceQuestion(models.Model):
     class Meta:
         order_with_respect_to = 'section'
 
     text_en = models.CharField(max_length=250, blank=True)
     text_fi = models.CharField(max_length=250, blank=True)
-    section = models.ForeignKey(Section, on_delete=models.CASCADE, related_name='questions')
+    section = models.ForeignKey(Section, on_delete=models.CASCADE, related_name='multiple_choice_questions')
 
     def __str__(self):
         return self.text_en or self.text_fi
 
 
-class Answer(models.Model):
+class MultipleChoiceAnswer(models.Model):
     class Meta:
         order_with_respect_to = 'question'
 
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
+    question = models.ForeignKey(MultipleChoiceQuestion, on_delete=models.CASCADE, related_name='answers')
     text_en = models.CharField(max_length=250, blank=True)
     text_fi = models.CharField(max_length=250, blank=True)
     correct = models.BooleanField(default=False)
@@ -160,14 +160,14 @@ class SectionCompletion(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
 
-class QuestionResponse(models.Model):
+class MultipleChoiceResponse(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['user', 'answer'], name='unique_response_for_user_and_answer'),
         ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+    answer = models.ForeignKey(MultipleChoiceAnswer, on_delete=models.CASCADE)
     response = models.BooleanField()
     last_modified = models.DateTimeField(auto_now=True)
 

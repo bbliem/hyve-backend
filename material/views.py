@@ -21,15 +21,15 @@ class SectionViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
-class QuestionViewSet(viewsets.ModelViewSet):
-    queryset = models.Question.objects.all()
-    serializer_class = serializers.QuestionSerializer
+class MultipleChoiceQuestionViewSet(viewsets.ModelViewSet):
+    queryset = models.MultipleChoiceQuestion.objects.all()
+    serializer_class = serializers.MultipleChoiceQuestionSerializer
     permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
-class AnswerViewSet(viewsets.ModelViewSet):
-    queryset = models.Answer.objects.all()
-    serializer_class = serializers.AnswerSerializer
+class MultipleChoiceAnswerViewSet(viewsets.ModelViewSet):
+    queryset = models.MultipleChoiceAnswer.objects.all()
+    serializer_class = serializers.MultipleChoiceAnswerSerializer
     permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
@@ -71,7 +71,7 @@ class AuthTokenWithUserData(ObtainAuthToken):
                                                      context={'request': request},
                                                      omit=['completed_sections'],
                                                      expand=['memberships',
-                                                             'question_responses',
+                                                             'multiple_choice_responses',
                                                              'section_completions'])
         return Response({
             'token': token.key,
@@ -89,13 +89,13 @@ class SectionCompletionViewSet(mixins.CreateModelMixin,
     permission_classes = [permissions.IsOwner]
 
 
-class QuestionResponseViewSet(mixins.CreateModelMixin,
+class MultipleChoiceResponseViewSet(mixins.CreateModelMixin,
                               mixins.RetrieveModelMixin,
                               mixins.UpdateModelMixin,
                               mixins.DestroyModelMixin,
                               viewsets.GenericViewSet):
-    queryset = models.QuestionResponse.objects.all()
-    serializer_class = serializers.QuestionResponseSerializer
+    queryset = models.MultipleChoiceResponse.objects.all()
+    serializer_class = serializers.MultipleChoiceResponseSerializer
     permission_classes = [permissions.IsOwner]
 
 

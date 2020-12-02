@@ -20,22 +20,22 @@ class LessonAdmin(admin.ModelAdmin):
     inlines = [MembershipInline]
 
 
-class AnswerInline(admin.TabularInline):
-    model = models.Answer
+class MultipleChoiceAnswerInline(admin.TabularInline):
+    model = models.MultipleChoiceAnswer
 
 
-@admin.register(models.Question)
-class QuestionAdmin(admin.ModelAdmin):
-    inlines = [AnswerInline]
+@admin.register(models.MultipleChoiceQuestion)
+class MultipleChoiceQuestionAdmin(admin.ModelAdmin):
+    inlines = [MultipleChoiceAnswerInline]
 
 
-class QuestionInline(admin.TabularInline):
-    model = models.Question
+class MultipleChoiceQuestionInline(admin.TabularInline):
+    model = models.MultipleChoiceQuestion
 
 
 @admin.register(models.Section)
 class SectionAdmin(admin.ModelAdmin):
-    inlines = [QuestionInline]
+    inlines = [MultipleChoiceQuestionInline]
 
 
 class ContentInline(admin.TabularInline):
@@ -51,8 +51,8 @@ class SectionCompletionInline(admin.TabularInline):
     model = models.SectionCompletion
 
 
-class QuestionResponseInline(admin.TabularInline):
-    model = models.QuestionResponse
+class MultipleChoiceResponseInline(admin.TabularInline):
+    model = models.MultipleChoiceResponse
 
 
 class UserCreationForm(forms.ModelForm):
@@ -105,7 +105,7 @@ class UserAdmin(BaseUserAdmin):
     # The forms to add and change user instances
     form = UserChangeForm
     add_form = UserCreationForm
-    inlines = [SectionCompletionInline, QuestionResponseInline]
+    inlines = [SectionCompletionInline, MultipleChoiceResponseInline]
 
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin

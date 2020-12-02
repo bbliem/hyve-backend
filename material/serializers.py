@@ -10,27 +10,27 @@ class StaticPageSerializer(FlexFieldsSerializerMixin, serializers.ModelSerialize
         fields = ['url', 'id', 'title_en', 'title_fi', 'content_en', 'content_fi']
 
 
-class AnswerSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+class MultipleChoiceAnswerSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
-        model = models.Answer
+        model = models.MultipleChoiceAnswer
         fields = ['url', 'id', 'question', 'text_en', 'text_fi', 'correct', 'explanation_en', 'explanation_fi']
 
 
-class QuestionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+class MultipleChoiceQuestionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
-        model = models.Question
+        model = models.MultipleChoiceQuestion
         fields = ['url', 'id', 'section', 'text_en', 'text_fi', 'answers']
         expandable_fields = {
-            'answers': (AnswerSerializer, {'source': 'answers', 'many': True})
+            'answers': (MultipleChoiceAnswerSerializer, {'source': 'answers', 'many': True})
         }
 
 
 class SectionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Section
-        fields = ['url', 'id', 'text_en', 'text_fi', 'questions']
+        fields = ['url', 'id', 'text_en', 'text_fi', 'multiple_choice_questions']
         expandable_fields = {
-            'questions': (QuestionSerializer, {'source': 'questions', 'many': True})
+            'multiple_choice_questions': (MultipleChoiceQuestionSerializer, {'source': 'multiple_choice_questions', 'many': True})
         }
 
 
@@ -72,14 +72,14 @@ class SectionCompletionSerializer(FlexFieldsSerializerMixin, serializers.ModelSe
         return value
 
 
-class QuestionResponseSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+class MultipleChoiceResponseSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
-        model = models.QuestionResponse
+        model = models.MultipleChoiceResponse
         fields = ['url', 'id', 'user', 'answer', 'response', 'last_modified']
 
     def validate_user(self, value):
         if value != self.context['request'].user:
-            raise serializers.ValidationError("User specified in QuestionResponse object is not yourself")
+            raise serializers.ValidationError("User specified in MultipleChoiceResponse object is not yourself")
         return value
 
 
@@ -130,6 +130,6 @@ class UserSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
         expandable_fields = {
             'organizations': (OrganizationSerializer, {'source': 'organization_set', 'many': True}),
             'section_completions': (SectionCompletionSerializer, {'source': 'sectioncompletion_set', 'many': True, 'omit': ['user']}),
-            'question_responses': (QuestionResponseSerializer, {'source': 'questionresponse_set', 'many': True, 'omit': ['user']}),
+            'multiple_choice_responses': (MultipleChoiceResponseSerializer, {'source': 'multiple_choice_response_set', 'many': True, 'omit': ['user']}),
             'memberships': (MembershipSerializer, {'source': 'membership_set', 'many': True, 'omit': ['user']}),
         }
