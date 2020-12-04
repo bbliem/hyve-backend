@@ -51,7 +51,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
 
