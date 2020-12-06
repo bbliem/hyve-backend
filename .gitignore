@@ -1,6 +1,7 @@
 __pycache__/
 db.sqlite3
 django.log
+media
 venv
 .idea
 .env*

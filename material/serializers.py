@@ -143,7 +143,7 @@ class OrganizationSerializerWithMembers(FlexFieldsSerializerMixin, serializers.M
 class UserSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.User
-        fields = ['url', 'id', 'email', 'name', 'is_superuser', 'completed_sections']
+        fields = ['url', 'id', 'email', 'name', 'avatar', 'is_superuser', 'completed_sections']
         read_only_fields = ['is_superuser']
         expandable_fields = {
             'organizations': (OrganizationSerializer, {'source': 'organization_set', 'many': True}),

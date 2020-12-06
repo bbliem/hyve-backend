@@ -147,7 +147,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = decouple.config('STATIC_URL', default='/static/')
-STATIC_ROOT = decouple.config('STATIC_ROOT', default=None)
+STATIC_ROOT = decouple.config('STATIC_ROOT')
+MEDIA_URL = decouple.config('MEDIA_URL', default='/media/')
+MEDIA_ROOT = decouple.config('MEDIA_ROOT')
 
 # If serving from a subdirectory, you may want to set FORCE_SCRIPT_NAME
 FORCE_SCRIPT_NAME = decouple.config('FORCE_SCRIPT_NAME', default=None)

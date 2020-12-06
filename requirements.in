@@ -1,0 +1,7 @@
+Django
+Pillow
+django-cors-headers
+djangorestframework
+djangorestframework-camel-case
+drf-flex-fields
+python-decouple

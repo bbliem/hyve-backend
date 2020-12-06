@@ -1,7 +1,16 @@
+import os
+import uuid
+
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 
 from material import managers
+
+
+def get_avatar_file_path(instance, filename):
+    file_extension = os.path.splitext(filename)[1]
+    filename = f'{uuid.uuid4()}{file_extension}'
+    return os.path.join('avatars', filename)
 
 
 class StaticPage(models.Model):
@@ -128,6 +137,7 @@ class User(AbstractBaseUser):
         unique=True,
     )
     name = models.CharField(max_length=100, blank=True)
+    avatar = models.ImageField(blank=True, upload_to=get_avatar_file_path)
     is_active = models.BooleanField(
         default=True,
         help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.',
