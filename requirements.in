@@ -4,4 +4,5 @@ django-cors-headers
 djangorestframework
 djangorestframework-camel-case
 drf-flex-fields
+drf-base64
 python-decouple

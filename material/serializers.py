@@ -1,3 +1,4 @@
+from drf_base64.serializers import ModelSerializer as Base64ModelSerializer
 from rest_flex_fields.serializers import FlexFieldsSerializerMixin
 from rest_framework import serializers
 
@@ -140,7 +141,7 @@ class OrganizationSerializerWithMembers(FlexFieldsSerializerMixin, serializers.M
     }
 
 
-class UserSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+class UserSerializer(FlexFieldsSerializerMixin, Base64ModelSerializer):
     class Meta:
         model = models.User
         fields = ['url', 'id', 'email', 'name', 'avatar', 'is_superuser', 'completed_sections']

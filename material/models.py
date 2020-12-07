@@ -8,8 +8,8 @@ from material import managers
 
 
 def get_avatar_file_path(instance, filename):
-    file_extension = os.path.splitext(filename)[1]
-    filename = f'{uuid.uuid4()}{file_extension}'
+    file_extension = os.path.splitext(filename)[1].lower()
+    filename = f'{instance.id}{file_extension}'
     return os.path.join('avatars', filename)
 
 
@@ -131,6 +131,7 @@ class Category(models.Model):
 
 
 class User(AbstractBaseUser):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(
         max_length=254,
         verbose_name='email address',
@@ -209,6 +210,7 @@ class OpenQuestionResponse(models.Model):
 
 
 class Organization(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, blank=True)
     users = models.ManyToManyField(User, through='Membership')
     lessons = models.ManyToManyField(Lesson)
