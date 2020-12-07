@@ -5,7 +5,9 @@
 #    pip-compile
 #
 asgiref==3.2.10           # via django
+django-cleanup==5.1.0     # via -r requirements.in
 django-cors-headers==3.5.0  # via -r requirements.in
+django-resized==0.3.11    # via -r requirements.in
 django==3.1.1             # via -r requirements.in, django-cors-headers, djangorestframework, drf-base64
 djangorestframework-camel-case==1.2.0  # via -r requirements.in
 djangorestframework==3.12.1  # via -r requirements.in, drf-base64

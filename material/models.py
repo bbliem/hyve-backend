@@ -3,6 +3,7 @@ import uuid
 
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
+from django_resized import ResizedImageField
 
 from material import managers
 from material import storage
@@ -10,7 +11,7 @@ from material import storage
 
 def get_avatar_file_path(instance, filename):
     file_extension = os.path.splitext(filename)[1].lower()
-    filename = f'{instance.id}{file_extension}'
+    filename = f'{uuid.uuid4()}{file_extension}'
     return os.path.join('avatars', filename)
 
 
@@ -139,7 +140,12 @@ class User(AbstractBaseUser):
         unique=True,
     )
     name = models.CharField(max_length=100, blank=True)
-    avatar = models.ImageField(blank=True, storage=storage.OverwriteStorage(), upload_to=get_avatar_file_path)
+    avatar = ResizedImageField(blank=True,
+                               storage=storage.OverwriteStorage(),
+                               upload_to=get_avatar_file_path,
+                               size=(400, 400),
+                               quality=85,
+                               keep_meta=False)
     is_active = models.BooleanField(
         default=True,
         help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.',

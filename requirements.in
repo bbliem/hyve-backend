@@ -1,8 +1,10 @@
 Django
 Pillow
+django-cleanup
 django-cors-headers
+django-resized
 djangorestframework
 djangorestframework-camel-case
-drf-flex-fields
 drf-base64
+drf-flex-fields
 python-decouple
