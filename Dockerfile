@@ -1,4 +1,4 @@
-FROM python:3.8-alpine as builder
+FROM python:3.9-alpine as builder
 
 WORKDIR /app
 
@@ -6,14 +6,14 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 RUN apk update && \
-    apk add --no-cache postgresql-dev gcc python3-dev musl-dev
+    apk add --no-cache postgresql-dev gcc python3-dev musl-dev jpeg-dev zlib-dev
 
 RUN pip install --upgrade pip
 COPY requirements.txt /tmp
 COPY . .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r /tmp/requirements.txt
 
-FROM python:3.8-alpine
+FROM python:3.9-alpine
 
 RUN apk update && apk add libpq
 COPY --from=builder /app/wheels /wheels
