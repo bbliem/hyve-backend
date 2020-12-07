@@ -5,6 +5,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 
 from material import managers
+from material import storage
 
 
 def get_avatar_file_path(instance, filename):
@@ -138,7 +139,7 @@ class User(AbstractBaseUser):
         unique=True,
     )
     name = models.CharField(max_length=100, blank=True)
-    avatar = models.ImageField(blank=True, upload_to=get_avatar_file_path)
+    avatar = models.ImageField(blank=True, storage=storage.OverwriteStorage(), upload_to=get_avatar_file_path)
     is_active = models.BooleanField(
         default=True,
         help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.',
