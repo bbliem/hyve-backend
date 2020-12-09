@@ -7,4 +7,6 @@ djangorestframework
 djangorestframework-camel-case
 drf-base64
 drf-flex-fields
+gunicorn
+psycopg2-binary
 python-decouple
