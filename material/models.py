@@ -141,6 +141,7 @@ class User(AbstractBaseUser):
     )
     name = models.CharField(max_length=100, blank=True)
     avatar = ResizedImageField(blank=True,
+                               null=True,
                                storage=storage.OverwriteStorage(),
                                upload_to=get_avatar_file_path,
                                size=(400, 400),
