@@ -9,10 +9,19 @@ from material import managers
 from material import storage
 
 
-def get_avatar_file_path(instance, filename):
+def get_uuid_file_basename(filename):
     file_extension = os.path.splitext(filename)[1].lower()
-    filename = f'{uuid.uuid4()}{file_extension}'
-    return os.path.join('avatars', filename)
+    return f'{uuid.uuid4()}{file_extension}'
+
+
+def get_avatar_file_path(instance, filename):
+    return os.path.join('avatars', get_uuid_file_basename(filename))
+
+
+def get_logo_file_path(instance, filename):
+    file_extension = os.path.splitext(filename)[1].lower()
+    basename = f'{instance.id}{file_extension}'
+    return os.path.join('logos', basename)
 
 
 class StaticPage(models.Model):
@@ -222,6 +231,9 @@ class Organization(models.Model):
     name = models.CharField(max_length=100, blank=True)
     users = models.ManyToManyField(User, through='Membership')
     lessons = models.ManyToManyField(Lesson)
+    logo = models.ImageField(blank=True,
+                             storage=storage.OverwriteStorage(),
+                             upload_to=get_logo_file_path)
 
     def __str__(self):
         return self.name
