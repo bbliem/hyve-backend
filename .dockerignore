@@ -6,5 +6,5 @@
 media
 venv
 db.sqlite3
-deploy-gitlab.sh
+build-gitlab.sh
 Dockerfile
