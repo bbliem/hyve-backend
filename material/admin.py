@@ -20,7 +20,7 @@ class OrganizationAdmin(admin.ModelAdmin):
     inlines = [MembershipInline]
 
 
-class MultipleChoiceAnswerInline(admin.TabularInline):
+class MultipleChoiceAnswerInline(admin.StackedInline):
     model = models.MultipleChoiceAnswer
 
 
