@@ -16,7 +16,7 @@ class MembershipInline(admin.TabularInline):
 
 
 @admin.register(models.Organization)
-class LessonAdmin(admin.ModelAdmin):
+class OrganizationAdmin(admin.ModelAdmin):
     inlines = [MembershipInline]
 
 
