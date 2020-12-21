@@ -4,7 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 RUN apk update && \
-    apk add --no-cache postgresql-dev gcc python3-dev musl-dev jpeg-dev zlib-dev
+    apk add --no-cache postgresql-dev gcc python3-dev musl-dev jpeg-dev zlib-dev libffi-dev
 RUN pip install --upgrade pip
 COPY requirements.txt /tmp
 RUN mkdir -p /wheels
