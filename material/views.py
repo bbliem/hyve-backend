@@ -51,7 +51,16 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(mixins.RetrieveModelMixin,
+                  mixins.UpdateModelMixin,
+                  viewsets.GenericViewSet):
+    """
+    View for getting and updating user info.
+
+    Creation/deletion should be done with the Djoser views. Also required fields (email, password) should be changed
+    there.
+    """
+    # TODO make sure we can't change required fields in this view
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
 
@@ -61,29 +70,6 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             self.permission_classes = [permissions.IsOwnAccount]
         return super().get_permissions()
-
-
-class AuthTokenWithUserData(ObtainAuthToken):
-    # Without setting this explicitly, DRF will just use JSONRenderer and ignore the camel-case renderer that we set.
-    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data,
-                                           context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
-        serialized_user = serializers.UserSerializer(user,
-                                                     context={'request': request},
-                                                     omit=['completed_sections'],
-                                                     expand=['memberships',
-                                                             'multiple_choice_responses',
-                                                             'open_question_responses',
-                                                             'section_completions'])
-        return Response({
-            'token': token.key,
-            'user': serialized_user.data,
-        })
 
 
 class SectionCompletionViewSet(mixins.CreateModelMixin,

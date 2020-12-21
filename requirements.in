@@ -5,6 +5,7 @@ django-cors-headers
 django-resized
 djangorestframework
 djangorestframework-camel-case
+djoser
 drf-base64
 drf-flex-fields
 gunicorn

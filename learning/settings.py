@@ -42,7 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'djoser',
     'corsheaders',
+    # To ensure that exceptions inside other apps' signal handlers do not affect the integrity of file deletions
+    # within transactions, django_cleanup should be placed last in INSTALLED_APPS.
     'django_cleanup.apps.CleanupConfig',
 ]
 
@@ -72,6 +75,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+DJOSER = {
+    'SEND_CONFIRMATION_EMAIL': True,
+    'USERNAME_CHANGED_EMAIL_CONFIRMATION': True,
+}
 
 ROOT_URLCONF = 'learning.urls'
 
@@ -163,3 +171,10 @@ CORS_ALLOWED_ORIGINS = decouple.config('CORS_ALLOWED_ORIGINS', cast=decouple.Csv
 if decouple.config('USE_PROXY_HEADERS', default=False, cast=bool):
     USE_X_FORWARDED_HOST = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Email
+
+DEFAULT_FROM_EMAIL = decouple.config('DEFAULT_FROM_EMAIL', default='webmaster@localhost')
+EMAIL_BACKEND = decouple.config('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = decouple.config('EMAIL_HOST', default='localhost')
+# For other setups, we may want to be able to specify the other EMAIL_* options as well in the future...
