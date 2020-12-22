@@ -112,11 +112,9 @@ class OrganizationViewSet(mixins.RetrieveModelMixin,
         Return serializer that includes membership data iff retrieving a specific organization of which the
         requesting user is a supervisor.
         """
-        if self.action == 'retrieve' and self.request.user.is_authenticated:
-            try:
-                membership = self.request.user.membership_set.get(organization=self.get_object())
-                if membership.is_supervisor:
-                    return serializers.OrganizationSerializerWithMembers
-            except models.Membership.DoesNotExist:
-                pass
+        if (self.action == 'retrieve'
+                and self.request.user.is_authenticated
+                and self.request.user.organization == self.get_object()
+                and self.request.user.is_supervisor):
+            return serializers.OrganizationSerializerWithMembers
         return serializers.OrganizationSerializer

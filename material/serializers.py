@@ -102,21 +102,13 @@ class OpenQuestionResponseSerializer(FlexFieldsSerializerMixin, serializers.Mode
         return value
 
 
-class MembershipSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
-    class Meta:
-        model = models.Membership
-        fields = ['id', 'user', 'organization', 'is_supervisor']
-
-
 class OrganizationSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     """
     Serializer for the Organization model meant for users that are not supervisors of the organization.
 
-    We deliberately don't include the organization's users in the fields because only supervisors should see those.
-    Neither do we include the membership_set in the expandable fields. This is because otherwise people who are not
-    supervisors but authorized to see an organization could see its members because by expanding the field in
-    Organization, the view for Membership, which checks permissions, is not accessed. If you have made sure that the
-    accessing user is a supervisor, you can use OrganizationSerializerWithMembers instead to get all the information.
+    We deliberately don't include the organization's users in the (expandable) fields because only supervisors should
+    see those. If you have made sure that the accessing user is a supervisor, you can use
+    OrganizationSerializerWithMembers instead to get all the information.
     """
     class Meta:
         model = models.Organization
@@ -133,23 +125,22 @@ class OrganizationSerializerWithMembers(FlexFieldsSerializerMixin, serializers.M
     """
     class Meta:
         model = models.Organization
-        fields = ['url', 'id', 'name', 'users', 'lessons']
+        fields = ['url', 'id', 'name', 'lessons']
 
     expandable_fields = {
         'lessons': (LessonSerializer, {'source': 'lessons', 'many': True}),
-        'memberships': (MembershipSerializer, {'source': 'membership_set', 'many': True, 'omit': ['organization']}),
+        'users': (ContentSerializer, {'source': 'user_set', 'many': True, 'omit': ['organization']})
     }
 
 
 class UserSerializer(FlexFieldsSerializerMixin, Base64ModelSerializer):
     class Meta:
         model = models.User
-        fields = ['url', 'id', 'email', 'name', 'avatar', 'is_superuser', 'completed_sections']
-        read_only_fields = ['is_superuser']
+        fields = ['url', 'id', 'email', 'organization', 'username', 'name', 'avatar', 'is_supervisor', 'is_superuser', 'completed_sections']
+        read_only_fields = ['organization', 'username', 'is_supervisor', 'is_superuser']
         expandable_fields = {
-            'organizations': (OrganizationSerializer, {'source': 'organization_set', 'many': True}),
+            'organization': OrganizationSerializer,
             'section_completions': (SectionCompletionSerializer, {'source': 'sectioncompletion_set', 'many': True, 'omit': ['user']}),
             'multiple_choice_responses': (MultipleChoiceResponseSerializer, {'source': 'multiplechoiceresponse_set', 'many': True, 'omit': ['user']}),
             'open_question_responses': (OpenQuestionResponseSerializer, {'source': 'openquestionresponse_set', 'many': True, 'omit': ['user']}),
-            'memberships': (MembershipSerializer, {'source': 'membership_set', 'many': True, 'omit': ['user']}),
         }

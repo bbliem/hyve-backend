@@ -3,6 +3,7 @@ import uuid
 
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
+from django.db.models import Q
 from django_resized import ResizedImageField
 
 from material import managers
@@ -141,13 +142,34 @@ class Category(models.Model):
         return self.name_en or self.name_fi
 
 
-class User(AbstractBaseUser):
+class Organization(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    email = models.EmailField(
-        max_length=254,
-        verbose_name='email address',
-        unique=True,
-    )
+    name = models.CharField(max_length=100, blank=True)
+    lessons = models.ManyToManyField(Lesson)
+    logo = models.ImageField(blank=True,
+                             storage=storage.OverwriteStorage(),
+                             upload_to=get_logo_file_path)
+
+    def __str__(self):
+        return self.name
+
+
+class User(AbstractBaseUser):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['email', 'organization'], name='no_duplicate_emails_per_organization'),
+            models.CheckConstraint(check=Q(organization__isnull=False) | Q(is_superuser=True),
+                                   name='admin_if_organization_is_null'),
+        ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    email = models.EmailField(max_length=200, verbose_name='email address')
+    # Organization should only be null for admin accounts; all others should have an organization
+    organization = models.ForeignKey(Organization, blank=True, null=True, on_delete=models.CASCADE)
+    # We want to identify users by the pair (email, organization). Unfortunately Django doesn't support composite
+    # usernames. We therefore introduce a redundant field `username`, which is automatically set to a combination
+    # of both fields.
+    username = models.CharField(max_length=254, unique=True, editable=False)
     name = models.CharField(max_length=100, blank=True)
     avatar = ResizedImageField(blank=True,
                                null=True,
@@ -158,37 +180,52 @@ class User(AbstractBaseUser):
                                keep_meta=False)
     is_active = models.BooleanField(
         default=True,
-        help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.',
+        help_text="Designates whether this user should be able to log in. Unselect this instead of deleting accounts.",
         verbose_name='active',
     )
+    # Is this user a supervisor of their organization?
+    is_supervisor = models.BooleanField(default=False,
+                                        help_text="Designates whether this user should be able to manage data about "
+                                                  "their organization and its members.",
+                                        verbose_name="Organization supervisor")
     # is_staff = models.BooleanField(
     #     default=False,
     #     help_text='Designates whether the user can log into this admin site.',
     #     verbose_name='staff status',
     # )
-    is_superuser = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False,
+                                       help_text="Designates whether this user should have full read and write access "
+                                                 "to all data.",
+                                       verbose_name="superuser")
 
     completed_sections = models.ManyToManyField(Section, blank=True, through='SectionCompletion')
 
     objects = managers.UserManager()
 
-    USERNAME_FIELD = 'email'
+    EMAIL_FIELD = 'email'
+    USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return self.email
+        return self.email if self.organization is None else f'{self.email} ({self.organization.name})'
 
-    def has_perm(self, perm, obj=None):
-        # TODO check if the following is a security problem
-        return True
+    @property
+    def is_staff(self):
+        return self.is_superuser
 
     def has_module_perms(self, app_label):
         # TODO check if the following is a security problem
         return True
 
-    @property
-    def is_staff(self):
-        return self.is_superuser
+    def has_perm(self, perm, obj=None):
+        # TODO check if the following is a security problem
+        return True
+
+    def save(self, *args, **kwargs):
+        self.username = self.email
+        if self.organization:
+            self.username += f':{self.organization.id}'
+        super().save(*args, **kwargs)
 
 
 class SectionCompletion(models.Model):
@@ -224,27 +261,3 @@ class OpenQuestionResponse(models.Model):
     question = models.ForeignKey(OpenQuestion, on_delete=models.CASCADE)
     response = models.TextField()
     last_modified = models.DateTimeField(auto_now=True)
-
-
-class Organization(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=100, blank=True)
-    users = models.ManyToManyField(User, through='Membership')
-    lessons = models.ManyToManyField(Lesson)
-    logo = models.ImageField(blank=True,
-                             storage=storage.OverwriteStorage(),
-                             upload_to=get_logo_file_path)
-
-    def __str__(self):
-        return self.name
-
-
-class Membership(models.Model):
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['user', 'organization'], name='no_duplicate_user_per_organization'),
-        ]
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    is_supervisor = models.BooleanField(default=False)

@@ -38,4 +38,4 @@ class IsMemberOfThisOrganization(permissions.BasePermission):
     Object-level permission to only allow members of an organization to access the organization.
     """
     def has_object_permission(self, request, view, obj):
-        return request.user.is_authenticated and obj in request.user.organization_set.all()
+        return request.user.is_authenticated and request.user.organization == obj

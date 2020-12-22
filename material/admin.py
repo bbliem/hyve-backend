@@ -7,17 +7,9 @@ from django.core.exceptions import ValidationError
 
 from material import models
 
-admin.site.register(models.StaticPage)
 admin.site.register(models.Category)
-
-
-class MembershipInline(admin.TabularInline):
-    model = models.Membership
-
-
-@admin.register(models.Organization)
-class OrganizationAdmin(admin.ModelAdmin):
-    inlines = [MembershipInline]
+admin.site.register(models.Organization)
+admin.site.register(models.StaticPage)
 
 
 class MultipleChoiceAnswerInline(admin.StackedInline):
@@ -64,15 +56,16 @@ class OpenQuestionResponseInline(admin.TabularInline):
 
 
 class UserCreationForm(forms.ModelForm):
-    """A form for creating new users. Includes all the required
+    """
+    A form for creating new users. Includes all the required
     fields, plus a repeated password.
     """
-    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
-
     class Meta:
         model = models.User
-        fields = ('email',)
+        fields = ('email', 'organization')
+
+    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -100,7 +93,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = models.User
-        fields = ('email', 'password', 'is_active', 'is_superuser')
+        fields = ('email', 'organization', 'password', 'is_active', 'is_superuser')
 
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.
@@ -113,29 +106,32 @@ class UserAdmin(BaseUserAdmin):
     # The forms to add and change user instances
     form = UserChangeForm
     add_form = UserCreationForm
-    inlines = [SectionCompletionInline, MultipleChoiceResponseInline, OpenQuestionResponseInline]
 
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('email', 'name', 'is_superuser')
-    list_filter = ('is_superuser',)
+    list_display = ('email', 'organization', 'name', 'is_supervisor', 'is_superuser')
+    list_filter = ('organization', 'is_supervisor', 'is_superuser')
+    readonly_fields = ('username',)
     fieldsets = (
-        (None, {'fields': ('email', 'password', 'is_active')}),
-        ('Personal info', {'fields': ('name', 'avatar',)}),
-        ('Permissions', {'fields': ('is_superuser',)}),
+        (None, {'fields': ('email', 'organization', 'username', 'password')}),
+        ('Personal details', {'fields': ('name', 'avatar',)}),
+        ('Permissions', {'fields': ('is_active', 'is_supervisor', 'is_superuser')}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2'),
+            'fields': ('email', 'organization', 'password1', 'password2', 'is_superuser'),
         }),
     )
     search_fields = ('email',)
     ordering = ('email',)
     filter_horizontal = ()
+
+    def get_inlines(self, request, obj):
+        return [] if obj is None else [SectionCompletionInline, MultipleChoiceResponseInline, OpenQuestionResponseInline]
 
 
 # Now register the new UserAdmin...
