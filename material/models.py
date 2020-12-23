@@ -169,6 +169,7 @@ class User(AbstractBaseUser):
     # We want to identify users by the pair (email, organization). Unfortunately Django doesn't support composite
     # usernames. We therefore introduce a redundant field `username`, which is automatically set to a combination
     # of both fields.
+    # XXX Currently manage.py createsuperuser asks for a username, but the value will be ignored and overwritten.
     username = models.CharField(max_length=254, unique=True, editable=False)
     name = models.CharField(max_length=100, blank=True)
     avatar = ResizedImageField(blank=True,
@@ -204,7 +205,7 @@ class User(AbstractBaseUser):
 
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['email', 'organization']
 
     def __str__(self):
         return self.email if self.organization is None else f'{self.email} ({self.organization.name})'
