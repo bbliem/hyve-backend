@@ -144,3 +144,14 @@ class UserSerializer(FlexFieldsSerializerMixin, Base64ModelSerializer):
             'multiple_choice_responses': (MultipleChoiceResponseSerializer, {'source': 'multiplechoiceresponse_set', 'many': True, 'omit': ['user']}),
             'open_question_responses': (OpenQuestionResponseSerializer, {'source': 'openquestionresponse_set', 'many': True, 'omit': ['user']}),
         }
+
+    def validate(self, data):
+        """Check that username has the required form (email + ':' + organization)"""
+        email = data['email']
+        organization = self.initial_data['organization']
+        if self.initial_data['username'] != f'{email}:{organization}':
+            raise serializers.ValidationError({'email': "Username is inconsistent with email and organization"})
+        # Apparently DRF doesn't recognize the UniqueConstraint in the User model
+        if models.User.objects.filter(email=email, organization=organization).exists():
+            raise serializers.ValidationError({'email': "E-mail address exists already"})
+        return data
