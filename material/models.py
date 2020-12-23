@@ -205,7 +205,7 @@ class User(AbstractBaseUser):
 
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email', 'organization']
+    REQUIRED_FIELDS = ['email']
 
     def __str__(self):
         return self.email if self.organization is None else f'{self.email} ({self.organization.name})'
