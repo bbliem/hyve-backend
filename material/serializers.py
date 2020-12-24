@@ -152,6 +152,7 @@ class UserSerializer(FlexFieldsSerializerMixin, Base64ModelSerializer):
         if self.initial_data['username'] != f'{email}:{organization}':
             raise serializers.ValidationError({'email': "Username is inconsistent with email and organization"})
         # Apparently DRF doesn't recognize the UniqueConstraint in the User model
-        if models.User.objects.filter(email=email, organization=organization).exists():
+        if (self.instance and data['email'] != self.instance.email
+                and models.User.objects.filter(email=email, organization=organization).exists()):
             raise serializers.ValidationError({'email': "E-mail address exists already"})
         return data
