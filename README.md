@@ -17,9 +17,23 @@ Now, to make Django take these headers into account, set the environment variabl
 Once the backend is running, you'll probably want to create an admin user. Run the following command:
 
 ```
-manage.py createsuperuser --username x
+manage.py createsuperuser
 ```
 
-You will be prompted for an email address and password. It does not matter what argument you specify for `--username`. The username you specify will be ignored and the new user's username will be the email address.  Unfortunately there does not seem to be an easy way to prevent `createsuperuser` from requiring a username, so you have to supply a dummy value.
+You will be prompted for an email address (which will also serve as the account's username) and password.
 
 In this project, users are identified by the combination of their email address and organization. (For admin users, the organization should always be `NULL`.) Since Django assumes that users can be identified by a single field, the user model contains a redundant field `username` that is automatically set to a string containing both email address and organization.
+
+This implies that you will **not** be able to log in with this admin account to frontend instances. If you want to log in to an organization's frontend, you must create an account there. The email address may be the same.
+
+If, for example, your admin account has the email address `me@example.com` and then you also use that email address for an account with the organization whose UUID is `123e4567-e89b-12d3-a456-426614174000`, you will have the following two usernames in the database:
+- `me@example.com` (your admin account, used for the Django admin interface)
+- `me@example.com:123e4567-e89b-12d3-a456-426614174000` (the account for the organization's frontend)
+
+## Setting up a frontend instance
+
+Typically, every organization has its own frontend. So before you deploy a frontend instance, you'll have to create an organization in the Django admin interface.
+
+Once you created the organization, take note of its UUID. One way of obtaining it is navigating to it in Django admin and extracting it from the URL. You will need to configure this organization's frontend instance to use that UUID to identify the organization.
+
+The frontend instance may also require static pages to be set up. You can also do this with the Django admin interface.

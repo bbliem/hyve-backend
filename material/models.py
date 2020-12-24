@@ -145,7 +145,7 @@ class Category(models.Model):
 class Organization(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, blank=True)
-    lessons = models.ManyToManyField(Lesson)
+    lessons = models.ManyToManyField(Lesson, blank=True)
     logo = models.ImageField(blank=True,
                              storage=storage.OverwriteStorage(),
                              upload_to=get_logo_file_path)
@@ -205,7 +205,7 @@ class User(AbstractBaseUser):
 
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
+    REQUIRED_FIELDS = ['email', 'organization']
 
     def __str__(self):
         return self.email if self.organization is None else f'{self.email} ({self.organization.name})'
