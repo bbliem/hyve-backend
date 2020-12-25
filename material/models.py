@@ -57,9 +57,9 @@ class Section(models.Model):
         preview = ''
         if self.text_en:
             preview = self.text_en
-        elif self.multiple_choice_questions:
+        elif self.multiple_choice_questions.exists():
             preview = self.multiple_choice_questions.first().text_en
-        elif self.open_questions:
+        elif self.open_questions.exists():
             preview = self.open_questions.first().text_en
         # Merge whitespace
         preview = ' '.join(preview.split())
