@@ -25,6 +25,10 @@ def get_logo_file_path(instance, filename):
     return os.path.join('logos', basename)
 
 
+def get_video_file_path(instance, filename):
+    return os.path.join('videos', get_uuid_file_basename(filename))
+
+
 class StaticPage(models.Model):
     title_en = models.CharField(max_length=250, blank=True)
     title_fi = models.CharField(max_length=250, blank=True)
@@ -36,7 +40,7 @@ class StaticPage(models.Model):
 
 
 class Section(models.Model):
-    """A section is part of a lesson and can contain a text, multiple-choice questions or open questions.
+    """A section is part of a lesson and can contain a text, video, multiple-choice questions or open questions.
 
     Since the relational DB model cannot model polymorphism very well, we pack all possible fields into the same model.
     One alternative would be to use Django's generic foreign keys as described in
@@ -46,6 +50,8 @@ class Section(models.Model):
     """
     text_en = models.TextField(blank=True)
     text_fi = models.TextField(blank=True)
+    video_en = models.FileField(blank=True, upload_to=get_video_file_path)
+    video_fi = models.FileField(blank=True, upload_to=get_video_file_path)
 
     def __str__(self):
         preview = ''

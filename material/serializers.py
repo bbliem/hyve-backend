@@ -35,7 +35,7 @@ class OpenQuestionSerializer(serializers.ModelSerializer):
 class SectionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Section
-        fields = ['url', 'id', 'text_en', 'text_fi', 'multiple_choice_questions', 'open_questions']
+        fields = ['url', 'id', 'text_en', 'text_fi', 'video_en', 'video_fi', 'multiple_choice_questions', 'open_questions']
         expandable_fields = {
             'multiple_choice_questions': (MultipleChoiceQuestionSerializer, {'source': 'multiple_choice_questions', 'many': True}),
             'open_questions': (OpenQuestionSerializer, {'source': 'open_questions', 'many': True}),
