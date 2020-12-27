@@ -77,7 +77,14 @@ MIDDLEWARE = [
 ]
 
 DJOSER = {
+    'EMAIL': {
+        'password_reset': 'material.email.PasswordResetEmail',
+    },
+    'PASSWORD_RESET_CONFIRM_URL': '/password-reset/confirm/{uid}/{token}',
     'SEND_CONFIRMATION_EMAIL': True,
+    'SERIALIZERS': {
+        'password_reset': 'material.serializers.PasswordResetSerializer',
+    },
     'USERNAME_CHANGED_EMAIL_CONFIRMATION': True,
 }
 

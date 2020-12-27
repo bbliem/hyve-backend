@@ -156,3 +156,21 @@ class UserSerializer(FlexFieldsSerializerMixin, Base64ModelSerializer):
                 and models.User.objects.filter(email=email, organization=organization).exists()):
             raise serializers.ValidationError({'email': "E-mail address exists already"})
         return data
+
+
+class PasswordResetSerializer(serializers.Serializer):
+    """Custom serializer for Djoser's password reset view"""
+    email = serializers.EmailField()
+    organization = serializers.UUIDField()
+
+    def get_user(self, is_active=True):
+        try:
+            user = models.User.objects.get(
+                is_active=is_active,
+                email=self.data.get('email', ''),
+                organization=self.data.get('organization', ''),
+            )
+            if user.has_usable_password() and user.organization and user.organization.password_reset_url:
+                return user
+        except models.User.DoesNotExist:
+            pass
