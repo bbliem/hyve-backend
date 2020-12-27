@@ -158,7 +158,7 @@ class Organization(models.Model):
     # URL of password reset form in frontend, returned when the user requests a link to reset their password.
     password_reset_url = models.CharField(max_length=250,
                                           blank=True,
-                                          help_text="Include the patterns {uid} and {token}.")
+                                          help_text="Include the patterns {uid}, {token} and, optionally, {language}.")
 
     def __str__(self):
         return self.name

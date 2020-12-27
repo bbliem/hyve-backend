@@ -69,6 +69,12 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # Django docs on order of LocaleMiddleware:
+    # Make sure it’s one of the first middleware installed. It should come after SessionMiddleware,
+    # because LocaleMiddleware makes use of session data. And it should come before CommonMiddleware because
+    # CommonMiddleware needs an activated language in order to resolve the requested URL. If you use CacheMiddleware,
+    # put LocaleMiddleware after it.
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -80,7 +86,6 @@ DJOSER = {
     'EMAIL': {
         'password_reset': 'material.email.PasswordResetEmail',
     },
-    'PASSWORD_RESET_CONFIRM_URL': '/password-reset/confirm/{uid}/{token}',
     'SEND_CONFIRMATION_EMAIL': True,
     'SERIALIZERS': {
         'password_reset': 'material.serializers.PasswordResetSerializer',
@@ -148,9 +153,9 @@ AUTH_USER_MODEL = 'material.User'
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = decouple.config('LANGUAGE_CODE', default='en-us')
 
-TIME_ZONE = 'Europe/Helsinki'
+TIME_ZONE = decouple.config('TIME_ZONE', default='Europe/Helsinki')
 
 USE_I18N = True
 
