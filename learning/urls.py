@@ -37,11 +37,15 @@ router.register(r'users', views.UserViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    # Authentication endpoints for DRF's browsable API
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     # Security remark: obtain_auth_token has no throttling; cf.
     # https://www.django-rest-framework.org/api-guide/authentication/#generating-tokens
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.BROWSABLE_API:
+    urlpatterns += [
+        # Authentication endpoints for DRF's browsable API
+        path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    ]
