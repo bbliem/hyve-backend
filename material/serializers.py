@@ -104,7 +104,7 @@ class OpenQuestionResponseSerializer(FlexFieldsSerializerMixin, serializers.Mode
 
 class OrganizationSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     """
-    Serializer for the Organization model meant for users that are not supervisors of the organization.
+    Serializer for the Organization model that does not include information about members.
 
     We deliberately don't include the organization's users in the (expandable) fields because only supervisors should
     see those. If you have made sure that the accessing user is a supervisor, you can use
@@ -121,7 +121,7 @@ class OrganizationSerializer(FlexFieldsSerializerMixin, serializers.ModelSeriali
 
 class OrganizationSerializerWithMembers(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     """
-    Serializer for the Organization model meant for supervisors of the organization.
+    Serializer for the Organization model including data about the organization members.
     """
     class Meta:
         model = models.Organization
@@ -129,7 +129,21 @@ class OrganizationSerializerWithMembers(FlexFieldsSerializerMixin, serializers.M
 
     expandable_fields = {
         'lessons': (LessonSerializer, {'source': 'lessons', 'many': True}),
-        'users': (ContentSerializer, {'source': 'user_set', 'many': True, 'omit': ['organization']})
+        'users': ('material.UserSerializer', {'source': 'user_set', 'many': True, 'omit': ['organization']})
+    }
+
+
+class OrganizationSerializerWithSupervisors(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+    """
+    Serializer for the Organization model including data about the organization supervisors.
+    """
+    class Meta:
+        model = models.Organization
+        fields = ['url', 'id', 'name', 'lessons']
+
+    expandable_fields = {
+        'lessons': (LessonSerializer, {'source': 'lessons', 'many': True}),
+        'users': ('material.SupervisorSerializer', {'source': 'user_set', 'many': True, 'omit': ['organization']})
     }
 
 
@@ -156,6 +170,19 @@ class UserSerializer(FlexFieldsSerializerMixin, Base64ModelSerializer):
                 and models.User.objects.filter(email=email, organization=organization).exists()):
             raise serializers.ValidationError({'email': "E-mail address exists already"})
         return data
+
+
+class SupervisorListSerializer(serializers.ListSerializer):
+    """Serializes models (such as User) that have an `is_supervisor` field"""
+    # https://stackoverflow.com/questions/28163556/how-do-you-filter-a-nested-serializer-in-django-rest-framework
+    def to_representation(self, data):
+        data = data.filter(is_supervisor=True)
+        return super().to_representation(data)
+
+
+class SupervisorSerializer(UserSerializer):
+    class Meta(UserSerializer.Meta):
+        list_serializer_class = SupervisorListSerializer
 
 
 class PasswordResetSerializer(serializers.Serializer):

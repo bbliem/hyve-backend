@@ -115,7 +115,9 @@ class OrganizationViewSet(mixins.RetrieveModelMixin,
         """
         if (self.action == 'retrieve'
                 and self.request.user.is_authenticated
-                and self.request.user.organization == self.get_object()
-                and self.request.user.is_supervisor):
-            return serializers.OrganizationSerializerWithMembers
+                and self.request.user.organization == self.get_object()):
+            if self.request.user.is_supervisor:
+                return serializers.OrganizationSerializerWithMembers
+            else:
+                return serializers.OrganizationSerializerWithSupervisors
         return serializers.OrganizationSerializer
