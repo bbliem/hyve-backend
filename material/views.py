@@ -1,9 +1,4 @@
-from django.shortcuts import render
 from rest_framework import viewsets, mixins
-from rest_framework.authtoken.models import Token
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.response import Response
-from rest_framework.settings import api_settings
 
 from material import models
 from material import permissions
@@ -50,27 +45,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = models.Category.objects.all()
     serializer_class = serializers.CategorySerializer
     permission_classes = [permissions.IsSuperUserOrReadOnly]
-
-
-class UserViewSet(mixins.RetrieveModelMixin,
-                  mixins.UpdateModelMixin,
-                  viewsets.GenericViewSet):
-    """
-    View for getting and updating user info.
-
-    Creation/deletion should be done with the Djoser views. Also required fields (email, password) should be changed
-    there.
-    """
-    # TODO make sure we can't change required fields in this view
-    queryset = models.User.objects.all()
-    serializer_class = serializers.UserSerializer
-
-    def get_permissions(self):
-        if self.action == 'list':
-            self.permission_classes = [permissions.IsSuperUser]
-        else:
-            self.permission_classes = [permissions.IsOwnAccount]
-        return super().get_permissions()
 
 
 class SectionCompletionViewSet(mixins.CreateModelMixin,

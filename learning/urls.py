@@ -17,6 +17,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import routers
 
 from material import views
@@ -33,13 +34,17 @@ router.register(r'open-question-responses', views.OpenQuestionResponseViewSet)
 router.register(r'sections', views.SectionViewSet)
 router.register(r'section-completions', views.SectionCompletionViewSet)
 router.register(r'static-pages', views.StaticPageViewSet)
-router.register(r'users', views.UserViewSet)
+# Register Djoser URLs (same as in djoser.views) explicitly in this router , otherwise they won't be displayed in the
+# browsable API due to duplicates (see comment below).
+router.register(r'users', DjoserUserViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
     # Security remark: obtain_auth_token has no throttling; cf.
     # https://www.django-rest-framework.org/api-guide/authentication/#generating-tokens
-    path('auth/', include('djoser.urls')),
+    # path('auth/', include('djoser.urls')),
+    # If we include djoser.urls like this, it won't be displayed in the browsable API since the path is duplicate.
+    # path('', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

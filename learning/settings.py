@@ -98,8 +98,13 @@ DJOSER = {
     },
     'SEND_CONFIRMATION_EMAIL': True,
     'SERIALIZERS': {
+        # Note that djoser.serializers.UserSerializer, which is the default for `user` and `current_user`,
+        # may contain code that we should adapt to our own UserSerializer in the future.
+        'current_user': 'material.serializers.UserSerializer',
         'password_reset': 'material.serializers.PasswordResetSerializer',
+        'user': 'material.serializers.UserSerializer',
     },
+    'USER_ID_FIELD': 'pk',
     'USERNAME_CHANGED_EMAIL_CONFIRMATION': True,
 }
 
