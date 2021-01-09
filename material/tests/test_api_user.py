@@ -1,7 +1,7 @@
 import pytest
 from django.urls import reverse
 
-from material.models import User
+from material.models import User, Organization
 
 
 @pytest.mark.django_db
@@ -94,6 +94,19 @@ def test_user_detail(api_client, user):
     assert response.status_code == 200
     assert response.data['email'] == user.email
     assert response.data['organization'] == user.organization.id
+    expected_result = {
+        'avatar': None,
+        'completed_sections': [],
+        'email': user.email,
+        'id': str(user.id),
+        'is_superuser': False,
+        'is_supervisor': False,
+        'name': user.name,
+        'organization': user.organization.id,
+        'url': f'http://testserver/users/{user.id}/',
+        'username': user.username,
+    }
+    assert response.data == expected_result
 
 
 @pytest.mark.django_db
@@ -103,6 +116,7 @@ def test_user_change(api_client, user):
     response = api_client.get(url)
     new_data = response.data
     new_data['email'] = 'newemail@example.com'
+    assert new_data['email'] != user.email
     new_data['username'] = f'{new_data["email"]}:{new_data["organization"]}'
     response = api_client.put(url, new_data, format='json')
     assert response.status_code == 200
@@ -112,9 +126,19 @@ def test_user_change(api_client, user):
         assert response.data[key] == new_data[key]
 
 @pytest.mark.django_db
-def test_user_change_different_organization_fails(api_client, user):
-    # TODO
-    assert False
+def test_user_change_different_organization_ineffective(api_client, user):
+    new_organization = Organization.objects.create(name='New organization')
+    assert new_organization.id != user.organization.id
+    api_client.force_authenticate(user=user)
+    url = reverse('user-detail', args=(user.id,))
+    response = api_client.get(url)
+    new_data = response.data
+    new_data['organization'] = new_organization.id
+    new_data['username'] = f'{new_data["email"]}:{new_organization.id}'
+    response = api_client.put(url, new_data, format='json')
+    assert response.status_code == 200
+    assert response.data['organization'] == user.organization.id
+    assert response.data['username'] == user.username
 
 
 @pytest.mark.django_db
@@ -132,8 +156,26 @@ def test_user_change_invalid_username(api_client, user):
 
 
 @pytest.mark.django_db
-def test_user_change_promotion_to_superuser_fails(api_client, user):
+def test_user_change_promotion_to_superuser_ineffective(api_client, user):
     assert not user.is_superuser
     api_client.force_authenticate(user=user)
-    # TODO
-    assert False
+    url = reverse('user-detail', args=(user.id,))
+    response = api_client.get(url)
+    new_data = response.data
+    new_data['is_superuser'] = True
+    response = api_client.put(url, new_data, format='json')
+    assert response.status_code == 200
+    assert not response.data['is_superuser']
+
+
+@pytest.mark.django_db
+def test_user_change_promotion_to_supervisor_ineffective(api_client, user):
+    assert not user.is_supervisor
+    api_client.force_authenticate(user=user)
+    url = reverse('user-detail', args=(user.id,))
+    response = api_client.get(url)
+    new_data = response.data
+    new_data['is_supervisor'] = True
+    response = api_client.put(url, new_data, format='json')
+    assert response.status_code == 200
+    assert not response.data['is_supervisor']
