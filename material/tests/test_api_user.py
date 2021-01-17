@@ -92,8 +92,6 @@ def test_user_detail(api_client, user):
     api_client.force_authenticate(user=user)
     response = api_client.get(reverse('user-detail', args=(user.id,)))
     assert response.status_code == 200
-    assert response.data['email'] == user.email
-    assert response.data['organization'] == user.organization.id
     expected_result = {
         'avatar': None,
         'completed_sections': [],

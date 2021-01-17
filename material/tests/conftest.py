@@ -21,4 +21,14 @@ def organization(db):
 
 @pytest.fixture
 def user(db, organization):
-    return User.objects.create(email='test@example.com', organization=organization)
+    return User.objects.create(email='user@example.com', organization=organization)
+
+
+@pytest.fixture
+def superuser(db, organization):
+    return User.objects.create(email='superuser@example.com', is_superuser=True)
+
+
+@pytest.fixture
+def supervisor(db, organization):
+    return User.objects.create(email='supervisor@example.com', organization=organization, is_supervisor=True)

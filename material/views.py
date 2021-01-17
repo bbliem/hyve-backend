@@ -85,13 +85,14 @@ class OrganizationViewSet(mixins.RetrieveModelMixin,
     def get_serializer_class(self):
         """
         Return serializer that includes membership data iff retrieving a specific organization of which the
-        requesting user is a supervisor.
+        requesting user is a supervisor or the user is a superuser.
         """
-        if (self.action == 'retrieve'
-                and self.request.user.is_authenticated
-                and self.request.user.organization == self.get_object()):
-            if self.request.user.is_supervisor:
+        if self.action == 'retrieve' and self.request.user.is_authenticated:
+            if self.request.user.is_superuser:
                 return serializers.OrganizationSerializerWithMembers
-            else:
-                return serializers.OrganizationSerializerWithSupervisors
+            elif self.request.user.organization == self.get_object():
+                if self.request.user.is_supervisor:
+                    return serializers.OrganizationSerializerWithMembers
+                else:
+                    return serializers.OrganizationSerializerWithSupervisors
         return serializers.OrganizationSerializer

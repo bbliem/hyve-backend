@@ -1,3 +1,4 @@
 -c requirements.txt
+pylint
 pytest
 pytest-django
