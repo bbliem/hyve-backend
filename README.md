@@ -2,7 +2,28 @@
 
 ## Installation
 
-TODO
+You can get the backend up and running with the following steps.
+
+Set up an instance of PostgreSQL and a database for the backend. (Other RDBMS may work but have not been tested.)
+
+Start a backend instance:
+```
+gunicorn hyve.wsgi:application --bind 0.0.0.0:8000
+```
+
+Run the database migrations:
+```
+./manage.py migrate
+```
+
+Create static files:
+```
+./manage.py collectstatic
+```
+
+Set up a web server for serving the static files and the media files. The static files and media files will be in the directories called `static` and `media`, respectively, under the project root. By default, they are expected to be served by your web server when accessing the paths `/static` and `/media`, respectively. This can be changed in the backend settings. If you do, make sure to also set the frontend accordingly.
+
+Set up a reverse proxy to access your backend instance, which will listen at port `8000` if you used the command above. If you serve it from a path other than `/`, you may want to use the backend setting `FORCE_SCRIPT_NAME`.
 
 ## Operating behind a reverse proxy
 
@@ -24,11 +45,9 @@ You will be prompted for an email address (which will also serve as the account'
 
 In this project, users are identified by the combination of their email address and organization. (For admin users, the organization should always be `NULL`.) Since Django assumes that users can be identified by a single field, the user model contains a redundant field `username` that is automatically set to a string containing both email address and organization.
 
-This implies that you will **not** be able to log in with this admin account to frontend instances. If you want to log in to an organization's frontend, you must create an account there. The email address may be the same.
-
-If, for example, your admin account has the email address `me@example.com` and then you also use that email address for an account with the organization whose UUID is `123e4567-e89b-12d3-a456-426614174000`, you will have the following two usernames in the database:
-- `me@example.com` (your admin account, used for the Django admin interface)
-- `me@example.com:123e4567-e89b-12d3-a456-426614174000` (the account for the organization's frontend)
+This implies that you can have multiple accounts with the same email address as long as they differ in their organization. If, for example, your admin account has the email address `me@example.com` and then you also use that email address for an account with the organization whose UUID is `123e4567-e89b-12d3-a456-426614174000`, you will have the following two usernames in the database:
+- `me@example.com` (your admin account, which can be used for the Django admin interface)
+- `me@example.com:123e4567-e89b-12d3-a456-426614174000` (the account which is a member of the organization)
 
 ## Setting up a frontend instance
 
