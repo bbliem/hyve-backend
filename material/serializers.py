@@ -151,7 +151,7 @@ class UserSerializer(FlexFieldsSerializerMixin, Base64ModelSerializer):
     class Meta:
         model = models.User
         fields = ['url', 'id', 'email', 'organization', 'username', 'name', 'avatar', 'is_supervisor', 'is_superuser', 'completed_sections']
-        read_only_fields = ['organization', 'username', 'is_supervisor', 'is_superuser']
+        read_only_fields = ['is_supervisor', 'is_superuser']
         expandable_fields = {
             'organization': OrganizationSerializer,
             'section_completions': (SectionCompletionSerializer, {'source': 'sectioncompletion_set', 'many': True, 'omit': ['user']}),
@@ -159,17 +159,10 @@ class UserSerializer(FlexFieldsSerializerMixin, Base64ModelSerializer):
             'open_question_responses': (OpenQuestionResponseSerializer, {'source': 'openquestionresponse_set', 'many': True, 'omit': ['user']}),
         }
 
-    def validate(self, data):
-        """Check that username has the required form (email + ':' + organization)"""
-        email = data['email']
-        organization = self.initial_data['organization']
-        if self.initial_data['username'] != f'{email}:{organization}':
-            raise serializers.ValidationError({'email': "Username is inconsistent with email and organization"})
-        # Apparently DRF doesn't recognize the UniqueConstraint in the User model
-        if (self.instance and data['email'] != self.instance.email
-                and models.User.objects.filter(email=email, organization=organization).exists()):
-            raise serializers.ValidationError({'email': "E-mail address exists already"})
-        return data
+    def update(self, instance, validated_data):
+        # Do not allow updating the organization
+        validated_data.pop('organization', None)
+        return super().update(instance, validated_data)
 
 
 class SupervisorListSerializer(serializers.ListSerializer):
