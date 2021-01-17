@@ -1,7 +1,7 @@
 import pytest
 from rest_framework.test import APIClient
 
-from material.models import Organization, User
+from material.models import Organization, User, Category, Lesson, Section
 
 
 @pytest.fixture
@@ -15,8 +15,23 @@ def api_client():
 
 
 @pytest.fixture
+def category(db):
+    return Category.objects.create(name_en='Category')
+
+
+@pytest.fixture
+def lesson(db):
+    return Lesson.objects.create(name_en='Lesson')
+
+
+@pytest.fixture
 def organization(db):
     return Organization.objects.create(name='Organization')
+
+
+@pytest.fixture
+def section(db):
+    return Section.objects.create()
 
 
 @pytest.fixture
