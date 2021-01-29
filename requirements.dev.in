@@ -1,4 +1,4 @@
 -c requirements.txt
-pylint
+flake8
 pytest
 pytest-django

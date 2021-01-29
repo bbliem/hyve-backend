@@ -11,3 +11,4 @@ drf-flex-fields
 gunicorn
 psycopg2-binary
 python-decouple
+wagtail

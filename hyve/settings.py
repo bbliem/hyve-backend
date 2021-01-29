@@ -29,6 +29,12 @@ DEBUG = decouple.config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = decouple.config('ALLOWED_HOSTS', cast=decouple.Csv())
 
+# Wagtail
+
+WAGTAIL_SITE_NAME = decouple.config('WAGTAIL_SITE_NAME', default='Hyve')
+WAGTAIL_USER_EDIT_FORM = 'material.forms.CustomUserEditForm'
+WAGTAIL_USER_CREATION_FORM = 'material.forms.CustomUserCreationForm'
+
 
 # Application definition
 
@@ -40,6 +46,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'wagtail.contrib.forms',
+    'wagtail.contrib.redirects',
+    'wagtail.embeds',
+    'wagtail.sites',
+    'wagtail.users',
+    'wagtail.snippets',
+    'wagtail.documents',
+    'wagtail.images',
+    'wagtail.search',
+    'wagtail.admin',
+    'wagtail.core',
+    'modelcluster',
+    'taggit',
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
@@ -90,6 +109,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
 
 DJOSER = {

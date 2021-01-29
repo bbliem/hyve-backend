@@ -2,6 +2,7 @@ import os
 import uuid
 
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.db.models import Q
 from django_resized import ResizedImageField
@@ -164,7 +165,7 @@ class Organization(models.Model):
         return self.name
 
 
-class User(AbstractBaseUser):
+class User(PermissionsMixin, AbstractBaseUser):
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['email', 'organization'], name='no_duplicate_emails_per_organization'),
@@ -180,8 +181,9 @@ class User(AbstractBaseUser):
     # usernames. We therefore introduce a redundant field `username`, which is automatically set to a combination
     # of both fields.
     # XXX Currently manage.py createsuperuser asks for a username, but the value will be ignored and overwritten.
-    username = models.CharField(max_length=254, unique=True, editable=False)
-    name = models.CharField(max_length=100, blank=True)
+    username = models.CharField(max_length=254, unique=True)
+    first_name = models.CharField(max_length=100, blank=True)
+    last_name = models.CharField(max_length=100, blank=True)
     avatar = ResizedImageField(blank=True,
                                null=True,
                                storage=storage.OverwriteStorage(),
@@ -199,15 +201,6 @@ class User(AbstractBaseUser):
                                         help_text="Designates whether this user should be able to manage data about "
                                                   "their organization and its members.",
                                         verbose_name="Organization supervisor")
-    # is_staff = models.BooleanField(
-    #     default=False,
-    #     help_text='Designates whether the user can log into this admin site.',
-    #     verbose_name='staff status',
-    # )
-    is_superuser = models.BooleanField(default=False,
-                                       help_text="Designates whether this user should have full read and write access "
-                                                 "to all data.",
-                                       verbose_name="superuser")
 
     completed_sections = models.ManyToManyField(Section, blank=True, through='SectionCompletion')
 
