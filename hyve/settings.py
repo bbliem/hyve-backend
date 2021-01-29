@@ -59,6 +59,8 @@ INSTALLED_APPS = [
     'wagtail.core',
     'modelcluster',
     'taggit',
+    'wagtail_localize',
+    'wagtail_localize.locales',
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
@@ -190,9 +192,17 @@ AUTH_USER_MODEL = 'material.User'
 
 LANGUAGE_CODE = decouple.config('LANGUAGE_CODE', default='en-us')
 
+# Languages supported by wagtail-localize
+LANGUAGES = [
+    ('en', 'English'),
+    ('fi', 'Suomi'),
+]
+WAGTAIL_CONTENT_LANGUAGES = LANGUAGES
+
 TIME_ZONE = decouple.config('TIME_ZONE', default='Europe/Helsinki')
 
 USE_I18N = True
+WAGTAIL_I18N_ENABLED = True
 
 USE_L10N = True
 
