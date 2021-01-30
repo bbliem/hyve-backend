@@ -6,6 +6,11 @@ from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.db.models import Q
 from django_resized import ResizedImageField
+from modelcluster.fields import ParentalKey
+from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, MultiFieldPanel, StreamFieldPanel
+from wagtail.core import blocks
+from wagtail.core.models import Page
+from wagtail.core.fields import RichTextField, StreamField
 
 from material import managers
 from material import storage
@@ -30,14 +35,15 @@ def get_video_file_path(instance, filename):
     return os.path.join('videos', get_uuid_file_basename(filename))
 
 
-class StaticPage(models.Model):
-    title_en = models.CharField(max_length=250, blank=True)
-    title_fi = models.CharField(max_length=250, blank=True)
-    content_en = models.TextField(blank=True)
-    content_fi = models.TextField(blank=True)
+class StaticPage(Page):
+    body = RichTextField(blank=True)
 
-    def __str__(self):
-        return self.title_en or self.title_fi
+    content_panels = Page.content_panels + [
+        FieldPanel('body', classname="full"),
+    ]
+
+    # parent_page_types = []
+    subpage_types = []
 
 
 class Section(models.Model):
@@ -111,15 +117,23 @@ class OpenQuestion(models.Model):
         return self.text_en or self.text_fi
 
 
-class Lesson(models.Model):
-    name_en = models.CharField(max_length=150, blank=True)
-    name_fi = models.CharField(max_length=150, blank=True)
-    description_en = models.TextField(blank=True)
-    description_fi = models.TextField(blank=True)
+class Lesson(Page):
+    description = RichTextField(blank=True)
+    # FIXME remove
     sections = models.ManyToManyField(Section, through='Content')
 
-    def __str__(self):
-        return self.name_en or self.name_fi
+    body = StreamField([
+        ('lesson_content', blocks.RichTextBlock()),
+        ('page_break', blocks.StaticBlock()),
+    ], blank=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel('description'),
+        StreamFieldPanel('body'),
+    ]
+
+    parent_page_types = ['Category']
+    subpage_types = []
 
 
 class Content(models.Model):
@@ -132,21 +146,22 @@ class Content(models.Model):
 
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
-    page = models.PositiveIntegerField()
+    page_number = models.PositiveIntegerField()
 
 
-class Category(models.Model):
+class Category(Page):
     class Meta:
         verbose_name_plural = 'categories'
 
-    name_en = models.CharField(max_length=150, blank=True)
-    name_fi = models.CharField(max_length=150, blank=True)
-    description_en = models.TextField(blank=True)
-    description_fi = models.TextField(blank=True)
-    lessons = models.ManyToManyField(Lesson, blank=True, related_name='categories')
+    description = RichTextField(blank=True)
+    # lessons = models.ManyToManyField(Lesson, blank=True, related_name='categories')
 
-    def __str__(self):
-        return self.name_en or self.name_fi
+    content_panels = Page.content_panels + [
+        FieldPanel('description'),
+    ]
+
+    parent_page_types = ['wagtailcore.page']
+    subpage_types = ['Lesson']
 
 
 class Organization(models.Model):
@@ -162,7 +177,7 @@ class Organization(models.Model):
                                           help_text="Include the patterns {uid}, {token} and, optionally, {language}.")
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 
 class User(PermissionsMixin, AbstractBaseUser):
@@ -182,8 +197,9 @@ class User(PermissionsMixin, AbstractBaseUser):
     # of both fields.
     # XXX Currently manage.py createsuperuser asks for a username, but the value will be ignored and overwritten.
     username = models.CharField(max_length=254, unique=True)
-    first_name = models.CharField(max_length=100, blank=True)
-    last_name = models.CharField(max_length=100, blank=True)
+    # first_name = models.CharField(max_length=100, blank=True)
+    # last_name = models.CharField(max_length=100, blank=True)
+    name = models.CharField(max_length=100, blank=True)
     avatar = ResizedImageField(blank=True,
                                null=True,
                                storage=storage.OverwriteStorage(),
