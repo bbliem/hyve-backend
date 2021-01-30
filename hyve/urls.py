@@ -26,8 +26,8 @@ from wagtail.documents import urls as wagtaildocs_urls
 from material import views
 
 router = routers.DefaultRouter()
-router.register(r'categories', views.CategoryViewSet)
-router.register(r'lessons', views.LessonViewSet)
+# router.register(r'categories', views.CategoryViewSet)
+# router.register(r'lessons', views.LessonViewSet)
 router.register(r'organizations', views.OrganizationViewSet)
 router.register(r'multiple-choice-answers', views.MultipleChoiceAnswerViewSet)
 router.register(r'multiple-choice-questions', views.MultipleChoiceQuestionViewSet)

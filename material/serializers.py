@@ -49,26 +49,26 @@ class OpenQuestionSerializer(serializers.ModelSerializer):
 #         expandable_fields = {
 #             'section': (SectionSerializer, {'source': 'section'})
 #         }
-
-
-class LessonSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
-    class Meta:
-        model = models.Lesson
-        fields = ['url', 'id', 'name_en', 'name_fi', 'description_en', 'description_fi', 'categories', 'sections']
-        # expandable_fields = {
-        #     'contents': (ContentSerializer, {'source': 'content_set', 'many': True, 'omit': ['lesson']})
-        # }
-
-
-class CategorySerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
-    class Meta:
-        model = models.Category
-        fields = ['url', 'id', 'name_en', 'name_fi', 'description_en', 'description_fi', 'lessons']
-        expandable_fields = {
-            'lessons': (LessonSerializer, {'many': True})
-        }
-
-
+# 
+# 
+# class LessonSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+#     class Meta:
+#         model = models.Lesson
+#         fields = ['url', 'id', 'name_en', 'name_fi', 'description_en', 'description_fi', 'categories', 'sections']
+#         # expandable_fields = {
+#         #     'contents': (ContentSerializer, {'source': 'content_set', 'many': True, 'omit': ['lesson']})
+#         # }
+# 
+# 
+# class CategorySerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+#     class Meta:
+#         model = models.Category
+#         fields = ['url', 'id', 'name_en', 'name_fi', 'description_en', 'description_fi', 'lessons']
+#         expandable_fields = {
+#             'lessons': (LessonSerializer, {'many': True})
+#         }
+# 
+# 
 # class SectionCompletionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
 #     class Meta:
 #         model = models.SectionCompletion
@@ -115,7 +115,7 @@ class OrganizationSerializer(FlexFieldsSerializerMixin, serializers.ModelSeriali
         fields = ['url', 'id', 'name', 'lessons']
 
     expandable_fields = {
-        'lessons': (LessonSerializer, {'source': 'lessons', 'many': True}),
+        # 'lessons': (LessonSerializer, {'source': 'lessons', 'many': True}),
     }
 
 
@@ -128,7 +128,7 @@ class OrganizationSerializerWithMembers(FlexFieldsSerializerMixin, serializers.M
         fields = ['url', 'id', 'name', 'lessons']
 
     expandable_fields = {
-        'lessons': (LessonSerializer, {'source': 'lessons', 'many': True}),
+        # 'lessons': (LessonSerializer, {'source': 'lessons', 'many': True}),
         'users': ('material.UserSerializer', {'source': 'user_set', 'many': True, 'omit': ['organization']})
     }
 
@@ -142,7 +142,7 @@ class OrganizationSerializerWithSupervisors(FlexFieldsSerializerMixin, serialize
         fields = ['url', 'id', 'name', 'lessons']
 
     expandable_fields = {
-        'lessons': (LessonSerializer, {'source': 'lessons', 'many': True}),
+        # 'lessons': (LessonSerializer, {'source': 'lessons', 'many': True}),
         'users': ('material.SupervisorSerializer', {'source': 'user_set', 'many': True, 'omit': ['organization']})
     }
 

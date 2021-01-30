@@ -8,10 +8,11 @@ from django.db.models import Q
 from django_resized import ResizedImageField
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
-from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, StreamFieldPanel
+from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, MultiFieldPanel, PageChooserPanel, StreamFieldPanel
 from wagtail.core import blocks
 from wagtail.core.models import Orderable, Page
 from wagtail.core.fields import RichTextField, StreamField
+from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.snippets.models import register_snippet
 
 from material import managers
@@ -48,17 +49,39 @@ class StaticPage(Page):
     subpage_types = []
 
 
+@register_snippet
+class Quiz(ClusterableModel):
+    class Meta:
+        verbose_name_plural = 'quizzes'
+
+    internal_name = models.CharField(max_length=250, blank=True)
+
+    panels = [
+        FieldPanel('internal_name'),
+        MultiFieldPanel([
+            InlinePanel('questions'),
+        ], heading="Questions")
+    ]
+
+    def __str__(self):
+        return self.internal_name
+
+
 class MultipleChoiceQuestion(Orderable, ClusterableModel):
-    lesson = ParentalKey('Lesson', on_delete=models.CASCADE, related_name='multiple_choice_questions')
+    quiz = ParentalKey('Quiz', on_delete=models.CASCADE, related_name='questions')
 
     text_en = models.CharField(max_length=250, blank=True)
     text_fi = models.CharField(max_length=250, blank=True)
 
-    def __str__(self):
-        return self.text_en or self.text_fi
+    panels = [
+        FieldPanel('text_en'),
+        FieldPanel('text_fi'),
+        MultiFieldPanel([
+            InlinePanel('answers'),
+        ], heading="Answers")
+    ]
 
 
-@register_snippet
 class MultipleChoiceAnswer(Orderable):
     question = ParentalKey(MultipleChoiceQuestion, on_delete=models.CASCADE, related_name='answers')
 
@@ -68,12 +91,9 @@ class MultipleChoiceAnswer(Orderable):
     explanation_en = models.CharField(max_length=250, blank=True)
     explanation_fi = models.CharField(max_length=250, blank=True)
 
-    def __str__(self):
-        return self.text_en or self.text_fi
-
 
 class OpenQuestion(Orderable):
-    lesson = ParentalKey('Lesson', on_delete=models.CASCADE, related_name='open_questions')
+    lesson = ParentalKey('LessonPage', on_delete=models.CASCADE, related_name='open_questions')
 
     text_en = models.CharField(max_length=250, blank=True)
     text_fi = models.CharField(max_length=250, blank=True)
@@ -82,25 +102,25 @@ class OpenQuestion(Orderable):
         return self.text_en or self.text_fi
 
 
-class Lesson(Page):
+class LessonPage(Page):
     description = RichTextField(blank=True)
 
     body = StreamField([
         ('lesson_content', blocks.RichTextBlock()),
         ('page_break', blocks.StaticBlock()),
+        ('quiz', SnippetChooserBlock('material.Quiz')),
     ], blank=True)
 
     content_panels = Page.content_panels + [
         FieldPanel('description'),
         StreamFieldPanel('body'),
-        InlinePanel('multiple_choice_questions'),
     ]
 
-    parent_page_types = ['Category']
+    parent_page_types = ['CategoryPage']
     subpage_types = []
 
 
-class Category(Page):
+class CategoryPage(Page):
     class Meta:
         verbose_name_plural = 'categories'
 
@@ -112,13 +132,13 @@ class Category(Page):
     ]
 
     parent_page_types = ['wagtailcore.page']
-    subpage_types = ['Lesson']
+    subpage_types = ['LessonPage']
 
 
 class Organization(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, blank=True)
-    lessons = models.ManyToManyField(Lesson, blank=True)
+    lessons = models.ManyToManyField(LessonPage, blank=True)
     logo = models.ImageField(blank=True,
                              storage=storage.OverwriteStorage(),
                              upload_to=get_logo_file_path)

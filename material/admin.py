@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 
 from material import models
 
-admin.site.register(models.Category)
+# admin.site.register(models.Category)
 admin.site.register(models.Organization)
 admin.site.register(models.StaticPage)
 

@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
             options={'ordering': ['sort_order']},
         ),
         migrations.RemoveField(
-            model_name='lesson',
+            model_name='lessonpage',
             name='sections',
         ),
         migrations.RemoveField(
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='multiplechoicequestion',
             name='lesson',
-            field=modelcluster.fields.ParentalKey(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='multiple_choice_questions', to='material.lesson'),
+            field=modelcluster.fields.ParentalKey(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='multiple_choice_questions', to='material.lessonpage'),
             preserve_default=False,
         ),
         migrations.AddField(
@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='openquestion',
             name='lesson',
-            field=modelcluster.fields.ParentalKey(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='open_questions', to='material.lesson'),
+            field=modelcluster.fields.ParentalKey(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='open_questions', to='material.lessonpage'),
             preserve_default=False,
         ),
         migrations.AddField(

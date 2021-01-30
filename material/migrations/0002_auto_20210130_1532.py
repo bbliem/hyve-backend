@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Category',
+            name='CategoryPage',
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
                 ('description', wagtail.core.fields.RichTextField(blank=True)),
@@ -124,7 +124,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='answers', to='material.multiplechoicequestion'),
         ),
         migrations.CreateModel(
-            name='Lesson',
+            name='LessonPage',
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
                 ('description', wagtail.core.fields.RichTextField(blank=True)),
@@ -139,7 +139,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='content',
             name='lesson',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='material.lesson'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='material.lessonpage'),
         ),
         migrations.AddField(
             model_name='content',
@@ -149,7 +149,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='organization',
             name='lessons',
-            field=models.ManyToManyField(blank=True, to='material.Lesson'),
+            field=models.ManyToManyField(blank=True, to='material.LessonPage'),
         ),
         migrations.AddField(
             model_name='user',

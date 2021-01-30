@@ -35,16 +35,16 @@ class OpenQuestionViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
-class LessonViewSet(viewsets.ModelViewSet):
-    queryset = models.Lesson.objects.all()
-    serializer_class = serializers.LessonSerializer
-    permission_classes = [permissions.IsSuperUserOrReadOnly]
+# class LessonViewSet(viewsets.ModelViewSet):
+#     queryset = models.Lesson.objects.all()
+#     serializer_class = serializers.LessonSerializer
+#     permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = models.Category.objects.all()
-    serializer_class = serializers.CategorySerializer
-    permission_classes = [permissions.IsSuperUserOrReadOnly]
+# class CategoryViewSet(viewsets.ModelViewSet):
+#     queryset = models.Category.objects.all()
+#     serializer_class = serializers.CategorySerializer
+#     permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
 # class SectionCompletionViewSet(mixins.CreateModelMixin,
