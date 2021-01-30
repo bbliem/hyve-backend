@@ -32,32 +32,32 @@ class OpenQuestionSerializer(serializers.ModelSerializer):
         fields = ['url', 'id', 'section', 'text_en', 'text_fi']
 
 
-class SectionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
-    class Meta:
-        model = models.Section
-        fields = ['url', 'id', 'text_en', 'text_fi', 'video_en', 'video_fi', 'multiple_choice_questions', 'open_questions']
-        expandable_fields = {
-            'multiple_choice_questions': (MultipleChoiceQuestionSerializer, {'source': 'multiple_choice_questions', 'many': True}),
-            'open_questions': (OpenQuestionSerializer, {'source': 'open_questions', 'many': True}),
-        }
-
-
-class ContentSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
-    class Meta:
-        model = models.Content
-        fields = ['id', 'lesson', 'section', 'page']
-        expandable_fields = {
-            'section': (SectionSerializer, {'source': 'section'})
-        }
+# class SectionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+#     class Meta:
+#         model = models.Section
+#         fields = ['url', 'id', 'text_en', 'text_fi', 'video_en', 'video_fi', 'multiple_choice_questions', 'open_questions']
+#         expandable_fields = {
+#             'multiple_choice_questions': (MultipleChoiceQuestionSerializer, {'source': 'multiple_choice_questions', 'many': True}),
+#             'open_questions': (OpenQuestionSerializer, {'source': 'open_questions', 'many': True}),
+#         }
+# 
+# 
+# class ContentSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+#     class Meta:
+#         model = models.Content
+#         fields = ['id', 'lesson', 'section', 'page']
+#         expandable_fields = {
+#             'section': (SectionSerializer, {'source': 'section'})
+#         }
 
 
 class LessonSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Lesson
         fields = ['url', 'id', 'name_en', 'name_fi', 'description_en', 'description_fi', 'categories', 'sections']
-        expandable_fields = {
-            'contents': (ContentSerializer, {'source': 'content_set', 'many': True, 'omit': ['lesson']})
-        }
+        # expandable_fields = {
+        #     'contents': (ContentSerializer, {'source': 'content_set', 'many': True, 'omit': ['lesson']})
+        # }
 
 
 class CategorySerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
@@ -69,15 +69,15 @@ class CategorySerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer)
         }
 
 
-class SectionCompletionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
-    class Meta:
-        model = models.SectionCompletion
-        fields = ['url', 'id', 'user', 'section', 'last_modified']
-
-    def validate_user(self, value):
-        if value != self.context['request'].user:
-            raise serializers.ValidationError("User specified in SectionCompletion object is not yourself")
-        return value
+# class SectionCompletionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+#     class Meta:
+#         model = models.SectionCompletion
+#         fields = ['url', 'id', 'user', 'section', 'last_modified']
+# 
+#     def validate_user(self, value):
+#         if value != self.context['request'].user:
+#             raise serializers.ValidationError("User specified in SectionCompletion object is not yourself")
+#         return value
 
 
 class MultipleChoiceResponseSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
@@ -154,7 +154,7 @@ class UserSerializer(FlexFieldsSerializerMixin, Base64ModelSerializer):
         read_only_fields = ['is_supervisor', 'is_superuser']
         expandable_fields = {
             'organization': OrganizationSerializer,
-            'section_completions': (SectionCompletionSerializer, {'source': 'sectioncompletion_set', 'many': True, 'omit': ['user']}),
+            # 'section_completions': (SectionCompletionSerializer, {'source': 'sectioncompletion_set', 'many': True, 'omit': ['user']}),
             'multiple_choice_responses': (MultipleChoiceResponseSerializer, {'source': 'multiplechoiceresponse_set', 'many': True, 'omit': ['user']}),
             'open_question_responses': (OpenQuestionResponseSerializer, {'source': 'openquestionresponse_set', 'many': True, 'omit': ['user']}),
         }

@@ -34,8 +34,8 @@ router.register(r'multiple-choice-questions', views.MultipleChoiceQuestionViewSe
 router.register(r'multiple-choice-responses', views.MultipleChoiceResponseViewSet)
 router.register(r'open-questions', views.OpenQuestionViewSet)
 router.register(r'open-question-responses', views.OpenQuestionResponseViewSet)
-router.register(r'sections', views.SectionViewSet)
-router.register(r'section-completions', views.SectionCompletionViewSet)
+# router.register(r'sections', views.SectionViewSet)
+# router.register(r'section-completions', views.SectionCompletionViewSet)
 router.register(r'static-pages', views.StaticPageViewSet)
 # Register Djoser URLs (same as in djoser.views) explicitly in this router , otherwise they won't be displayed in the
 # browsable API due to duplicates (see comment below).

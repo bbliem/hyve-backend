@@ -29,22 +29,22 @@ class OpenQuestionInline(admin.TabularInline):
     model = models.OpenQuestion
 
 
-@admin.register(models.Section)
-class SectionAdmin(admin.ModelAdmin):
-    inlines = [MultipleChoiceQuestionInline, OpenQuestionInline]
+# @admin.register(models.Section)
+# class SectionAdmin(admin.ModelAdmin):
+#     inlines = [MultipleChoiceQuestionInline, OpenQuestionInline]
 
 
-class ContentInline(admin.TabularInline):
-    model = models.Content
+# class ContentInline(admin.TabularInline):
+#     model = models.Content
 
 
-@admin.register(models.Lesson)
-class LessonAdmin(admin.ModelAdmin):
-    inlines = [ContentInline]
+# @admin.register(models.Lesson)
+# class LessonAdmin(admin.ModelAdmin):
+#     inlines = [ContentInline]
 
 
-class SectionCompletionInline(admin.TabularInline):
-    model = models.SectionCompletion
+# class SectionCompletionInline(admin.TabularInline):
+#     model = models.SectionCompletion
 
 
 class MultipleChoiceResponseInline(admin.TabularInline):
@@ -131,7 +131,8 @@ class UserAdmin(BaseUserAdmin):
     filter_horizontal = ()
 
     def get_inlines(self, request, obj):
-        return [] if obj is None else [SectionCompletionInline, MultipleChoiceResponseInline, OpenQuestionResponseInline]
+        # return [] if obj is None else [SectionCompletionInline, MultipleChoiceResponseInline, OpenQuestionResponseInline]
+        return [] if obj is None else [MultipleChoiceResponseInline, OpenQuestionResponseInline]
 
 
 # Now register the new UserAdmin...

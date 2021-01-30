@@ -7,10 +7,12 @@ from django.db import models
 from django.db.models import Q
 from django_resized import ResizedImageField
 from modelcluster.fields import ParentalKey
-from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, MultiFieldPanel, StreamFieldPanel
+from modelcluster.models import ClusterableModel
+from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, StreamFieldPanel
 from wagtail.core import blocks
-from wagtail.core.models import Page
+from wagtail.core.models import Orderable, Page
 from wagtail.core.fields import RichTextField, StreamField
+from wagtail.snippets.models import register_snippet
 
 from material import managers
 from material import storage
@@ -46,55 +48,20 @@ class StaticPage(Page):
     subpage_types = []
 
 
-class Section(models.Model):
-    """A section is part of a lesson and can contain a text, video, multiple-choice questions or open questions.
-
-    Since the relational DB model cannot model polymorphism very well, we pack all possible fields into the same model.
-    One alternative would be to use Django's generic foreign keys as described in
-    https://stackoverflow.com/questions/933092/generic-many-to-many-relationships. However, this would require a lot
-    of work to get usable in the Django admin, and it may be difficult for serialization. See, e.g.,
-    https://stackoverflow.com/questions/13907211/genericforeignkey-and-admin-in-django
-    """
-    text_en = models.TextField(blank=True)
-    text_fi = models.TextField(blank=True)
-    video_en = models.FileField(blank=True, upload_to=get_video_file_path)
-    video_fi = models.FileField(blank=True, upload_to=get_video_file_path)
-
-    def __str__(self):
-        preview = ''
-        if self.text_en:
-            preview = self.text_en
-        elif self.multiple_choice_questions.exists():
-            preview = self.multiple_choice_questions.first().text_en
-        elif self.open_questions.exists():
-            preview = self.open_questions.first().text_en
-        # Merge whitespace
-        preview = ' '.join(preview.split())
-        s = f"Section {self.pk}"
-        if preview:
-            s += ': ' + preview[:50]
-            if len(preview) > 50:
-                s += '...'
-        return s
-
-
-class MultipleChoiceQuestion(models.Model):
-    class Meta:
-        order_with_respect_to = 'section'
+class MultipleChoiceQuestion(Orderable, ClusterableModel):
+    lesson = ParentalKey('Lesson', on_delete=models.CASCADE, related_name='multiple_choice_questions')
 
     text_en = models.CharField(max_length=250, blank=True)
     text_fi = models.CharField(max_length=250, blank=True)
-    section = models.ForeignKey(Section, on_delete=models.CASCADE, related_name='multiple_choice_questions')
 
     def __str__(self):
         return self.text_en or self.text_fi
 
 
-class MultipleChoiceAnswer(models.Model):
-    class Meta:
-        order_with_respect_to = 'question'
+@register_snippet
+class MultipleChoiceAnswer(Orderable):
+    question = ParentalKey(MultipleChoiceQuestion, on_delete=models.CASCADE, related_name='answers')
 
-    question = models.ForeignKey(MultipleChoiceQuestion, on_delete=models.CASCADE, related_name='answers')
     text_en = models.CharField(max_length=250, blank=True)
     text_fi = models.CharField(max_length=250, blank=True)
     correct = models.BooleanField(default=False)
@@ -105,13 +72,11 @@ class MultipleChoiceAnswer(models.Model):
         return self.text_en or self.text_fi
 
 
-class OpenQuestion(models.Model):
-    class Meta:
-        order_with_respect_to = 'section'
+class OpenQuestion(Orderable):
+    lesson = ParentalKey('Lesson', on_delete=models.CASCADE, related_name='open_questions')
 
     text_en = models.CharField(max_length=250, blank=True)
     text_fi = models.CharField(max_length=250, blank=True)
-    section = models.ForeignKey(Section, on_delete=models.CASCADE, related_name='open_questions')
 
     def __str__(self):
         return self.text_en or self.text_fi
@@ -119,8 +84,6 @@ class OpenQuestion(models.Model):
 
 class Lesson(Page):
     description = RichTextField(blank=True)
-    # FIXME remove
-    sections = models.ManyToManyField(Section, through='Content')
 
     body = StreamField([
         ('lesson_content', blocks.RichTextBlock()),
@@ -130,23 +93,11 @@ class Lesson(Page):
     content_panels = Page.content_panels + [
         FieldPanel('description'),
         StreamFieldPanel('body'),
+        InlinePanel('multiple_choice_questions'),
     ]
 
     parent_page_types = ['Category']
     subpage_types = []
-
-
-class Content(models.Model):
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['lesson', 'section'], name='no_duplicate_sections_per_lesson'),
-        ]
-        # TODO make sure page numbers respect the ordering relative to lesson
-        order_with_respect_to = 'lesson'
-
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
-    page_number = models.PositiveIntegerField()
 
 
 class Category(Page):
@@ -218,7 +169,8 @@ class User(PermissionsMixin, AbstractBaseUser):
                                                   "their organization and its members.",
                                         verbose_name="Organization supervisor")
 
-    completed_sections = models.ManyToManyField(Section, blank=True, through='SectionCompletion')
+    # FIXME replace by something else
+    # completed_sections = models.ManyToManyField(Section, blank=True, through='SectionCompletion')
 
     objects = managers.UserManager()
 
@@ -248,15 +200,15 @@ class User(PermissionsMixin, AbstractBaseUser):
         super().save(*args, **kwargs)
 
 
-class SectionCompletion(models.Model):
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['user', 'section'], name='unique_completion_for_user_and_section'),
-        ]
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
-    last_modified = models.DateTimeField(auto_now=True)
+# class SectionCompletion(models.Model):
+#     class Meta:
+#         constraints = [
+#             models.UniqueConstraint(fields=['user', 'section'], name='unique_completion_for_user_and_section'),
+#         ]
+#
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     section = models.ForeignKey(Section, on_delete=models.CASCADE)
+#     last_modified = models.DateTimeField(auto_now=True)
 
 
 class MultipleChoiceResponse(models.Model):

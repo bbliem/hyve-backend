@@ -11,10 +11,10 @@ class StaticPageViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
-class SectionViewSet(viewsets.ModelViewSet):
-    queryset = models.Section.objects.all()
-    serializer_class = serializers.SectionSerializer
-    permission_classes = [permissions.IsSuperUserOrReadOnly]
+# class SectionViewSet(viewsets.ModelViewSet):
+#     queryset = models.Section.objects.all()
+#     serializer_class = serializers.SectionSerializer
+#     permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
 class MultipleChoiceQuestionViewSet(viewsets.ModelViewSet):
@@ -47,14 +47,14 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
-class SectionCompletionViewSet(mixins.CreateModelMixin,
-                               mixins.RetrieveModelMixin,
-                               mixins.UpdateModelMixin,
-                               mixins.DestroyModelMixin,
-                               viewsets.GenericViewSet):
-    queryset = models.SectionCompletion.objects.all()
-    serializer_class = serializers.SectionCompletionSerializer
-    permission_classes = [permissions.IsOwner]
+# class SectionCompletionViewSet(mixins.CreateModelMixin,
+#                                mixins.RetrieveModelMixin,
+#                                mixins.UpdateModelMixin,
+#                                mixins.DestroyModelMixin,
+#                                viewsets.GenericViewSet):
+#     queryset = models.SectionCompletion.objects.all()
+#     serializer_class = serializers.SectionCompletionSerializer
+#     permission_classes = [permissions.IsOwner]
 
 
 class MultipleChoiceResponseViewSet(mixins.CreateModelMixin,
