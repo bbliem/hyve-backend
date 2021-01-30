@@ -92,9 +92,8 @@ class MultipleChoiceAnswer(Orderable):
     explanation_fi = models.CharField(max_length=250, blank=True)
 
 
-class OpenQuestion(Orderable):
-    lesson = ParentalKey('LessonPage', on_delete=models.CASCADE, related_name='open_questions')
-
+@register_snippet
+class OpenQuestion(models.Model):
     text_en = models.CharField(max_length=250, blank=True)
     text_fi = models.CharField(max_length=250, blank=True)
 
@@ -109,6 +108,7 @@ class LessonPage(Page):
         ('lesson_content', blocks.RichTextBlock()),
         ('page_break', blocks.StaticBlock()),
         ('quiz', SnippetChooserBlock('material.Quiz')),
+        ('open_question', SnippetChooserBlock('material.OpenQuestion')),
     ], blank=True)
 
     content_panels = Page.content_panels + [
@@ -125,7 +125,6 @@ class CategoryPage(Page):
         verbose_name_plural = 'categories'
 
     description = RichTextField(blank=True)
-    # lessons = models.ManyToManyField(Lesson, blank=True, related_name='categories')
 
     content_panels = Page.content_panels + [
         FieldPanel('description'),
