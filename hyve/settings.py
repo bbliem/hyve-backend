@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'taggit',
     'wagtail_localize',
     'wagtail_localize.locales',
+    'wagtailvideos',
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',

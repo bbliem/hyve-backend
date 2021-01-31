@@ -13,3 +13,4 @@ psycopg2-binary
 python-decouple
 wagtail
 wagtail-localize
+wagtailvideos

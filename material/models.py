@@ -14,6 +14,7 @@ from wagtail.core.models import Orderable, Page
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.snippets.models import register_snippet
+from wagtailvideos.blocks import VideoChooserBlock
 
 from material import managers
 from material import storage
@@ -106,6 +107,7 @@ class LessonPage(Page):
 
     body = StreamField([
         ('lesson_content', blocks.RichTextBlock()),
+        ('video', VideoChooserBlock()),
         ('page_break', blocks.StaticBlock()),
         ('quiz', SnippetChooserBlock('material.Quiz')),
         ('open_question', SnippetChooserBlock('material.OpenQuestion')),
