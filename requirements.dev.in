@@ -1,4 +1,5 @@
 -c requirements.txt
+django-extensions
 flake8
 pytest
 pytest-django
