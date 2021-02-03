@@ -1,12 +1,25 @@
 from wagtail.core import hooks
+from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
+
+from .models import OpenQuestion, Organization, Quiz
+
+
+@modeladmin_register
+class OrganizationAdmin(ModelAdmin):
+    model = Organization
+    menu_icon = 'group'
+    menu_order = 601
+    add_to_settings_menu = True
+    list_display = ('name', 'logo')
+    search_filter = ('name',)
 
 
 @hooks.register('construct_page_action_menu')
 def hide_page_action_menu_items(menu_items, request, context):
-    HIDDEN_ITEMS = [
+    HIDDEN_ITEMS = {
         'action-submit',  # "Submit to moderator's approval"
         'action-lock',
-    ]
+    }
     menu_items[:] = [m for m in menu_items if m.name not in HIDDEN_ITEMS]
 
 
@@ -17,12 +30,13 @@ def hide_main_menu_items(request, menu_items):
 
 @hooks.register('construct_settings_menu')
 def hide_settings_menu_items(request, menu_items):
-    HIDDEN_ITEMS = [
-        'redirects',
-        'workflows',
-        'workflow-tasks',
+    HIDDEN_ITEMS = {
         'groups',
-    ]
+        'redirects',
+        'sites',
+        'workflow-tasks',
+        'workflows',
+    }
     menu_items[:] = [m for m in menu_items if m.name not in HIDDEN_ITEMS]
 
 
