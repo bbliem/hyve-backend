@@ -36,6 +36,8 @@ def hide_settings_menu_items(request, menu_items):
         'sites',
         'workflow-tasks',
         'workflows',
+        'groups',
+        'sites',
     }
     menu_items[:] = [m for m in menu_items if m.name not in HIDDEN_ITEMS]
 

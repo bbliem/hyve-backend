@@ -146,6 +146,10 @@ class Organization(models.Model):
                                           blank=True,
                                           help_text="Include the patterns {uid}, {token} and, optionally, {language}.")
 
+    panels = [
+        InlinePanel('lessons'),
+    ]
+
     def __str__(self):
         return str(self.name)
 
