@@ -12,12 +12,11 @@ from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, MultiFieldPanel
 from wagtail.core import blocks
 from wagtail.core.models import Orderable, Page
 from wagtail.core.fields import RichTextField, StreamField
-from wagtail.snippets.blocks import SnippetChooserBlock
-from wagtail.snippets.models import register_snippet
 from wagtailvideos.blocks import VideoChooserBlock
 
 from material import managers
 from material import storage
+from material.blocks import QuizBlock
 
 
 def get_uuid_file_basename(filename):
@@ -57,21 +56,21 @@ class Lesson(Page):
         ('lesson_content', blocks.RichTextBlock()),
         ('video', VideoChooserBlock()),
         ('page_break', blocks.StaticBlock()),
-        ('quiz', SnippetChooserBlock('material.Quiz')),
-        ('open_question', SnippetChooserBlock('material.OpenQuestion')),
+        ('quiz', QuizBlock()),
+        ('open_question', blocks.RichTextBlock()),
     ], blank=True)
 
     content_panels = Page.content_panels + [
         FieldPanel('description'),
         StreamFieldPanel('body'),
-        InlinePanel('quizzes', label="Quizzes"),
+        # TODO: Synchronize quizzes in body with Quiz model
+        # InlinePanel('quizzes', label="Quizzes"),
     ]
 
     parent_page_types = ['Category']
     subpage_types = []
 
 
-@register_snippet
 class Quiz(ClusterableModel):
     class Meta:
         # Or better...? class Meta(ClusterableModel.Meta):
@@ -113,10 +112,8 @@ class MultipleChoiceAnswer(Orderable):
     explanation = models.CharField(max_length=250, blank=True)
 
 
-@register_snippet
 class OpenQuestion(models.Model):
     lesson = ParentalKey(Lesson, on_delete=models.CASCADE, related_name='open_questions')
-
     text = models.CharField(max_length=250, blank=True)
 
 
