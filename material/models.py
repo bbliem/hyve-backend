@@ -38,6 +38,61 @@ def get_video_file_path(instance, filename):
     return os.path.join('videos', get_uuid_file_basename(filename))
 
 
+class SyncHierarchyMixin:
+    """
+    Sync data of an instance and its descendants (in some hierarchy) with StreamField blocks.
+
+    When you use this mixin, your class should implement `sync`. This method should update the instance itself.
+
+    If the instance has children in the hierarchy, you also must provide both of the following options in the class
+    body:
+    - child_blocks_key: Key of the block dict for getting the child blocks
+    - child_instances_field: Name of the model field containing the child model instances.
+
+    The child model must (probably?) be linked to the parent with a ParentalKey and the parent must extend
+    ClusterableModel.
+
+    """
+    def sync_hierarchy(self, block):
+        self.sync(block)
+        child_blocks_key = getattr(self, 'child_blocks_key', None)
+        child_instances_field = getattr(self, 'child_instances_field', None)
+        if child_blocks_key is not None or child_instances_field is not None:
+            child_blocks = block[child_blocks_key]
+            child_instances = getattr(self, child_instances_field)
+
+            child_blocks_by_id = {uuid.UUID(b['id']): b for b in child_blocks}
+            new_child_ids = set(child_blocks_by_id.keys())
+            # UUID(str(id)) because id can be either a string or an UUID
+            old_child_ids = set(uuid.UUID(str(id)) for id in child_instances.values_list('id', flat=True))
+
+            # Delete children
+            for child_id in old_child_ids - new_child_ids:
+                child = child_instances.model.objects.get(id=child_id)
+                # child.delete()
+                # Use modelcluster functionality instead. Deletion is done when the root is saved.
+                child_instances.remove(child)
+
+            # Update children
+            for child_id in old_child_ids & new_child_ids:
+                # child = child_instances.get(id=child_id)
+                # For some reason this doesn't work with `id`.
+                child = child_instances.model.objects.get(id=child_id)
+                child.sync_hierarchy(child_blocks_by_id[child_id])
+                # Node that we need to "add" the child even though it is already there. Otherwise the changes will
+                # not be saved. django-modelcluster treats adding already existing children as an update. Hopefully
+                # this stays so in the future.
+                child_instances.add(child)
+
+            # Create children
+            for child_id in new_child_ids - old_child_ids:
+                # child = child_instances.model.objects.create(id=child_id, TODO parent)
+                # Use modelcluster functionality instead.
+                child = child_instances.model(id=child_id)
+                child.sync_hierarchy(child_blocks_by_id[child_id])
+                child_instances.add(child)
+
+
 class StaticPage(Page):
     body = RichTextField(blank=True)
 
@@ -49,7 +104,11 @@ class StaticPage(Page):
     subpage_types = []
 
 
-class Lesson(Page):
+class Lesson(Page, SyncHierarchyMixin):
+    # Options for SyncHierarchyMixin
+    child_blocks_key = 'quizzes'
+    child_instances_field = 'quizzes'
+
     description = RichTextField(blank=True)
 
     body = StreamField([
@@ -63,35 +122,54 @@ class Lesson(Page):
     content_panels = Page.content_panels + [
         FieldPanel('description'),
         StreamFieldPanel('body'),
-        # TODO: Synchronize quizzes in body with Quiz model
-        # InlinePanel('quizzes', label="Quizzes"),
     ]
 
     parent_page_types = ['Category']
     subpage_types = []
 
+    def save(self, *args, **kwargs):
+        update_fields = kwargs.get('update_fields')
+        if update_fields and 'body' not in update_fields:
+            # This update doesn't change body, so we don't do anything
+            super().save(*args, **kwargs)
+        else:
+            data = {'quizzes': [block for block in self.body.stream_data if block['type'] == 'quiz']}
+            self.sync_hierarchy(data)
+            super().save(*args, **kwargs)
 
-class Quiz(ClusterableModel):
+    def sync(self, block):
+        pass
+
+
+class Quiz(ClusterableModel, SyncHierarchyMixin):
     class Meta:
         # Or better...? class Meta(ClusterableModel.Meta):
         verbose_name_plural = 'quizzes'
 
+    # Options for SyncHierarchyMixin
+    child_blocks_key = 'value'
+    child_instances_field = 'questions'
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     lesson = ParentalKey(Lesson, on_delete=models.CASCADE, related_name='quizzes')
-    internal_name = models.CharField(max_length=250, blank=True)
 
     panels = [
         FieldPanel('lesson'),
-        FieldPanel('internal_name'),
         MultiFieldPanel([
             InlinePanel('questions'),
         ], heading="Questions")
     ]
 
-    def __str__(self):
-        return self.internal_name
+    def sync(self, block):
+        pass
 
 
-class MultipleChoiceQuestion(Orderable, ClusterableModel):
+class MultipleChoiceQuestion(Orderable, ClusterableModel, SyncHierarchyMixin):
+    # Options for SyncHierarchyMixin
+    child_blocks_key = 'answers'
+    child_instances_field = 'answers'
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     quiz = ParentalKey('Quiz', on_delete=models.CASCADE, related_name='questions')
 
     text = models.CharField(max_length=250, blank=True)
@@ -103,13 +181,24 @@ class MultipleChoiceQuestion(Orderable, ClusterableModel):
         ], heading="Answers")
     ]
 
+    def sync(self, block):
+        assert self.id == uuid.UUID(block['id'])
+        self.text = block['question']
 
-class MultipleChoiceAnswer(Orderable):
+
+class MultipleChoiceAnswer(Orderable, SyncHierarchyMixin):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     question = ParentalKey(MultipleChoiceQuestion, on_delete=models.CASCADE, related_name='answers')
 
     text = models.CharField(max_length=250, blank=True)
     correct = models.BooleanField(default=False)
     explanation = models.CharField(max_length=250, blank=True)
+
+    def sync(self, block):
+        assert self.id == uuid.UUID(block['id'])
+        self.text = block['answer']
+        self.correct = block['correct']
+        self.explanation = block['explanation']
 
 
 class OpenQuestion(models.Model):
