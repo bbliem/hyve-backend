@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=('wagtailcore.page', material.models.SyncHierarchyMixin),
+            bases=('wagtailcore.page', material.models.SyncedChildModelsMixin),
         ),
         migrations.CreateModel(
             name='MultipleChoiceAnswer',
@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
                 'ordering': ['sort_order'],
                 'abstract': False,
             },
-            bases=(models.Model, material.models.SyncHierarchyMixin),
+            bases=(models.Model, material.models.SyncedChildModelsMixin),
         ),
         migrations.CreateModel(
             name='OpenQuestion',
@@ -87,7 +87,7 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name_plural': 'quizzes',
             },
-            bases=(models.Model, material.models.SyncHierarchyMixin),
+            bases=(models.Model, material.models.SyncedChildModelsMixin),
         ),
         migrations.CreateModel(
             name='OpenQuestionResponse',
@@ -121,7 +121,7 @@ class Migration(migrations.Migration):
                 'ordering': ['sort_order'],
                 'abstract': False,
             },
-            bases=(models.Model, material.models.SyncHierarchyMixin),
+            bases=(models.Model, material.models.SyncedChildModelsMixin),
         ),
         migrations.AddField(
             model_name='multiplechoiceanswer',
