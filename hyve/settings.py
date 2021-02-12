@@ -34,6 +34,7 @@ ALLOWED_HOSTS = decouple.config('ALLOWED_HOSTS', cast=decouple.Csv())
 WAGTAIL_SITE_NAME = decouple.config('WAGTAIL_SITE_NAME', default='Hyve')
 WAGTAIL_USER_EDIT_FORM = 'material.forms.CustomUserEditForm'
 WAGTAIL_USER_CREATION_FORM = 'material.forms.CustomUserCreationForm'
+WAGTAIL_MODERATION_ENABLED = False
 
 
 # Application definition
@@ -51,7 +52,7 @@ INSTALLED_APPS = [
     'wagtail.contrib.modeladmin',
     'wagtail.contrib.redirects',
     'wagtail.embeds',
-    # 'wagtail.sites',
+    'wagtail.sites',
     'wagtail.users',
     'wagtail_react_streamfield',
     'wagtail.snippets',

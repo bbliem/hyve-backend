@@ -14,8 +14,7 @@ from wagtail.core.models import Orderable, Page
 from wagtail.core.fields import RichTextField, StreamField
 from wagtailvideos.blocks import VideoChooserBlock
 
-from material import managers
-from material import storage
+from material import managers, storage
 from material.blocks import QuizBlock
 
 
@@ -62,7 +61,7 @@ class SyncedChildModelsMixin:
 
         child_blocks_by_id = {uuid.UUID(b['id']): b for b in child_blocks}
         new_child_ids = set(child_blocks_by_id.keys())
-        # UUID(str(id)) because id can be either a string or an UUID
+        # UUID(str(id)) because id can be either a string or a UUID
         old_child_ids = set(uuid.UUID(str(id)) for id in child_instances.values_list('id', flat=True))
 
         # Delete children
@@ -156,7 +155,7 @@ class Lesson(Page, SyncedChildModelsMixin):
         else:
             # Sync child models
             data = {
-                'quizzes': [block for block in self.body.stream_data if block['type'] == 'quiz'],
+                'quizzes': [block['value'] for block in self.body.stream_data if block['type'] == 'quiz'],
                 'open_questions': [block for block in self.body.stream_data if block['type'] == 'open_question'],
             }
             self.sync_hierarchy(data)
@@ -172,7 +171,7 @@ class Quiz(ClusterableModel, SyncedChildModelsMixin):
         verbose_name_plural = 'quizzes'
 
     synced_child_models = [
-        SyncedChildModel('questions', 'value'),
+        SyncedChildModel('questions'),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
