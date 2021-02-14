@@ -40,6 +40,9 @@ WAGTAIL_MODERATION_ENABLED = False
 # Application definition
 
 INSTALLED_APPS = [
+    'wagtail_modeltranslation',
+    'wagtail_modeltranslation.makemigrations',
+    'wagtail_modeltranslation.migrate',
     'material.apps.MaterialConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -63,8 +66,8 @@ INSTALLED_APPS = [
     'wagtail.core',
     'modelcluster',
     'taggit',
-    'wagtail_localize',
-    'wagtail_localize.locales',
+    # 'wagtail_localize',
+    # 'wagtail_localize.locales',
     'wagtailvideos',
     'rest_framework',
     'rest_framework.authtoken',
@@ -197,7 +200,7 @@ AUTH_USER_MODEL = 'material.User'
 
 LANGUAGE_CODE = decouple.config('LANGUAGE_CODE', default='en-us')
 
-# Languages supported by wagtail-localize
+# Languages supported by wagtail-modeltranslation
 LANGUAGES = [
     ('en', 'English'),
     ('fi', 'Suomi'),

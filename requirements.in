@@ -12,6 +12,6 @@ gunicorn
 psycopg2-binary
 python-decouple
 wagtail
-wagtail-localize
+wagtail-modeltranslation
 wagtail-react-streamfield
 wagtailvideos
