@@ -3,7 +3,7 @@ import uuid
 
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Q
 from django_resized import ResizedImageField
 from modelcluster.fields import ParentalKey
@@ -12,6 +12,7 @@ from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, MultiFieldPanel
 from wagtail.core import blocks
 from wagtail.core.models import Orderable, Page
 from wagtail.core.fields import RichTextField, StreamField
+from wagtail_localize.fields import BaseTranslatableField
 from wagtailvideos.blocks import VideoChooserBlock
 
 from material import managers, storage
@@ -62,7 +63,7 @@ class SyncedChildModelsMixin:
         child_blocks_by_id = {uuid.UUID(b['id']): b for b in child_blocks}
         new_child_ids = set(child_blocks_by_id.keys())
         # UUID(str(id)) because id can be either a string or a UUID
-        old_child_ids = set(uuid.UUID(str(id)) for id in child_instances.values_list('id', flat=True))
+        old_child_ids = set(uuid.UUID(str(id)) for id in child_instances.values_list('id', flat=True) if id is not None)
 
         # Delete children
         for child_id in old_child_ids - new_child_ids:
@@ -123,10 +124,26 @@ class StaticPage(Page):
     subpage_types = []
 
 
-class Lesson(Page, SyncedChildModelsMixin):
+class NonEditableField(BaseTranslatableField):
+    # Marking a field as non-editable entails that wagtail_localize doesn't synchronize it, which is what we want for,
+    # e.g., the child model instances of Quiz, because we want wagtail_localize to ignore them as they are generated
+    # from `body`, which is synchronized.
+    def is_editable(self, obj):
+        """
+        Returns True if the field is editable on the given object
+        """
+        return False
+
+
+class Lesson(SyncedChildModelsMixin, Page):
     synced_child_models = [
         SyncedChildModel('quizzes'),
         SyncedChildModel('open_questions'),
+    ]
+
+    override_translatable_fields = [
+        NonEditableField('quizzes'),
+        NonEditableField('open_questions'),
     ]
 
     description = RichTextField(blank=True)
@@ -154,6 +171,7 @@ class Lesson(Page, SyncedChildModelsMixin):
             super().save(*args, **kwargs)
         else:
             # Sync child models
+            import pdb;pdb.set_trace()
             data = {
                 'quizzes': [block['value'] for block in self.body.stream_data if block['type'] == 'quiz'],
                 'open_questions': [block for block in self.body.stream_data if block['type'] == 'open_question'],
@@ -164,11 +182,62 @@ class Lesson(Page, SyncedChildModelsMixin):
     def sync(self, block):
         pass
 
+    def copy_all_child_relations(self, target, *args, **kwargs):
+        # TODO: Make this generic.
+        # Called when, e.g., a copy (rather, an alias) for a new translation is made.
+        # Add child models to excluded fields to avoid creating instances of them that would then be created by save()
+        kwargs['exclude'] = kwargs.get('exclude', [])
+        for child_model in self.synced_child_models:
+            kwargs['exclude'].append(child_model.instances_field)
+        # # Update IDs in target, otherwise we'd later create child model instances with duplicate PKs
+        target.reset_body_ids()
+        import pdb;pdb.set_trace()
+        # TODO copy body here?
+        from wagtail.core.blocks.stream_block import StreamValue
+        target.body = StreamValue(self.body.stream_block,
+                                  self.body.stream_data,
+                                  is_lazy=self.body.is_lazy,
+                                  raw_text=self.body.raw_text)
+        return super().copy_all_child_relations(target, *args, **kwargs)
 
-class Quiz(ClusterableModel, SyncedChildModelsMixin):
+    @transaction.atomic
+    def copy_child_relation(self, child_relation, target, commit=False, append=False):
+        import pdb;pdb.set_trace()
+        child_object_map = super().copy_child_relation(child_relation, target, commit, append)
+        # OLD: super().copy_child_relation() has removed the PK of the child. Set it to a new UUID and update it in the body.
+        # super().copy_child_relation() has removed the PK of the child.
+        # Leave it as None, but set a new UUID in the body.
+        # FIXME: Make generic.
+        for (_, old_pk), child_object in child_object_map.items():
+            new_id = str(uuid.uuid4())
+            # child_object.id = new_id
+            if child_relation.name == 'quizzes':
+                for value in (block['value'] for block in target.body.stream_data if block['type'] == 'quiz'):
+                    value['id'] = new_id
+            # TODO: 'open_questions'
+        return child_object_map
+
+    def reset_body_ids(self):
+        """Set IDs in the body blocks of the entire synced child model hierarchy to new UUIDs."""
+        # FIXME: Make this terrible code generic. Keep in mind that we may not have synced child model instances yet
+        # even though there might be blocks for them in the body.
+        for block in self.body.stream_data:
+            if block['type'] == 'quiz':
+                # block['id'] = str(uuid.uuid4())  # Actually this is not a synced child block, so commented out...
+                block['value']['id'] = str(uuid.uuid4())
+                for question_block in block['value']['questions']:
+                    question_block['id'] = str(uuid.uuid4())
+                    for answer_block in question_block['answers']:
+                        answer_block['id'] = str(uuid.uuid4())
+            elif block['type'] == 'open_question':
+                block['id'] = str(uuid.uuid4())
+
+
+class Quiz(SyncedChildModelsMixin, ClusterableModel):
     class Meta:
         # Or better...? class Meta(ClusterableModel.Meta):
         verbose_name_plural = 'quizzes'
+        # unique_together = [('translation_key', 'locale')]
 
     synced_child_models = [
         SyncedChildModel('questions'),
@@ -188,7 +257,8 @@ class Quiz(ClusterableModel, SyncedChildModelsMixin):
         pass
 
 
-class MultipleChoiceQuestion(Orderable, ClusterableModel, SyncedChildModelsMixin):
+# TODO: We can get rid of Orderable since the ordering is done in the StreamField.
+class MultipleChoiceQuestion(SyncedChildModelsMixin, Orderable, ClusterableModel):
     synced_child_models = [
         SyncedChildModel('answers'),
     ]
@@ -210,7 +280,8 @@ class MultipleChoiceQuestion(Orderable, ClusterableModel, SyncedChildModelsMixin
         self.text = block['question']
 
 
-class MultipleChoiceAnswer(Orderable, SyncedChildModelsMixin):
+# TODO: We can get rid of Orderable since the ordering is done in the StreamField.
+class MultipleChoiceAnswer(SyncedChildModelsMixin, Orderable):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     question = ParentalKey(MultipleChoiceQuestion, on_delete=models.CASCADE, related_name='answers')
 
