@@ -12,21 +12,21 @@ admin.site.register(models.Organization)
 admin.site.register(models.StaticPage)
 
 
-class MultipleChoiceAnswerInline(admin.StackedInline):
-    model = models.MultipleChoiceAnswer
-
-
-@admin.register(models.MultipleChoiceQuestion)
-class MultipleChoiceQuestionAdmin(admin.ModelAdmin):
-    inlines = [MultipleChoiceAnswerInline]
-
-
-class MultipleChoiceQuestionInline(admin.TabularInline):
-    model = models.MultipleChoiceQuestion
-
-
-class OpenQuestionInline(admin.TabularInline):
-    model = models.OpenQuestion
+# class MultipleChoiceAnswerInline(admin.StackedInline):
+#     model = models.MultipleChoiceAnswer
+# 
+# 
+# @admin.register(models.MultipleChoiceQuestion)
+# class MultipleChoiceQuestionAdmin(admin.ModelAdmin):
+#     inlines = [MultipleChoiceAnswerInline]
+# 
+# 
+# class MultipleChoiceQuestionInline(admin.TabularInline):
+#     model = models.MultipleChoiceQuestion
+# 
+# 
+# class OpenQuestionInline(admin.TabularInline):
+#     model = models.OpenQuestion
 
 
 # @admin.register(models.Section)
@@ -47,12 +47,12 @@ class OpenQuestionInline(admin.TabularInline):
 #     model = models.SectionCompletion
 
 
-class MultipleChoiceResponseInline(admin.TabularInline):
-    model = models.MultipleChoiceResponse
-
-
-class OpenQuestionResponseInline(admin.TabularInline):
-    model = models.OpenQuestionResponse
+# class MultipleChoiceResponseInline(admin.TabularInline):
+#     model = models.MultipleChoiceResponse
+# 
+# 
+# class OpenQuestionResponseInline(admin.TabularInline):
+#     model = models.OpenQuestionResponse
 
 
 class UserCreationForm(forms.ModelForm):
@@ -130,9 +130,9 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('email',)
     filter_horizontal = ()
 
-    def get_inlines(self, request, obj):
-        # return [] if obj is None else [SectionCompletionInline, MultipleChoiceResponseInline, OpenQuestionResponseInline]
-        return [] if obj is None else [MultipleChoiceResponseInline, OpenQuestionResponseInline]
+    # def get_inlines(self, request, obj):
+    #     # return [] if obj is None else [SectionCompletionInline, MultipleChoiceResponseInline, OpenQuestionResponseInline]
+    #     return [] if obj is None else [MultipleChoiceResponseInline, OpenQuestionResponseInline]
 
 
 # Now register the new UserAdmin...

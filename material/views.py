@@ -17,22 +17,22 @@ class StaticPageViewSet(viewsets.ModelViewSet):
 #     permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
-class MultipleChoiceQuestionViewSet(viewsets.ModelViewSet):
-    queryset = models.MultipleChoiceQuestion.objects.all()
-    serializer_class = serializers.MultipleChoiceQuestionSerializer
-    permission_classes = [permissions.IsSuperUserOrReadOnly]
-
-
-class MultipleChoiceAnswerViewSet(viewsets.ModelViewSet):
-    queryset = models.MultipleChoiceAnswer.objects.all()
-    serializer_class = serializers.MultipleChoiceAnswerSerializer
-    permission_classes = [permissions.IsSuperUserOrReadOnly]
-
-
-class OpenQuestionViewSet(viewsets.ModelViewSet):
-    queryset = models.OpenQuestion.objects.all()
-    serializer_class = serializers.OpenQuestionSerializer
-    permission_classes = [permissions.IsSuperUserOrReadOnly]
+# class MultipleChoiceQuestionViewSet(viewsets.ModelViewSet):
+#     queryset = models.MultipleChoiceQuestion.objects.all()
+#     serializer_class = serializers.MultipleChoiceQuestionSerializer
+#     permission_classes = [permissions.IsSuperUserOrReadOnly]
+# 
+# 
+# class MultipleChoiceAnswerViewSet(viewsets.ModelViewSet):
+#     queryset = models.MultipleChoiceAnswer.objects.all()
+#     serializer_class = serializers.MultipleChoiceAnswerSerializer
+#     permission_classes = [permissions.IsSuperUserOrReadOnly]
+# 
+# 
+# class OpenQuestionViewSet(viewsets.ModelViewSet):
+#     queryset = models.OpenQuestion.objects.all()
+#     serializer_class = serializers.OpenQuestionSerializer
+#     permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
 # class LessonViewSet(viewsets.ModelViewSet):
@@ -57,24 +57,24 @@ class OpenQuestionViewSet(viewsets.ModelViewSet):
 #     permission_classes = [permissions.IsOwner]
 
 
-class MultipleChoiceResponseViewSet(mixins.CreateModelMixin,
-                              mixins.RetrieveModelMixin,
-                              mixins.UpdateModelMixin,
-                              mixins.DestroyModelMixin,
-                              viewsets.GenericViewSet):
-    queryset = models.MultipleChoiceResponse.objects.all()
-    serializer_class = serializers.MultipleChoiceResponseSerializer
-    permission_classes = [permissions.IsOwner]
-
-
-class OpenQuestionResponseViewSet(mixins.CreateModelMixin,
-                                  mixins.RetrieveModelMixin,
-                                  mixins.UpdateModelMixin,
-                                  mixins.DestroyModelMixin,
-                                  viewsets.GenericViewSet):
-    queryset = models.OpenQuestionResponse.objects.all()
-    serializer_class = serializers.OpenQuestionResponseSerializer
-    permission_classes = [permissions.IsOwner]
+# class MultipleChoiceResponseViewSet(mixins.CreateModelMixin,
+#                               mixins.RetrieveModelMixin,
+#                               mixins.UpdateModelMixin,
+#                               mixins.DestroyModelMixin,
+#                               viewsets.GenericViewSet):
+#     queryset = models.MultipleChoiceResponse.objects.all()
+#     serializer_class = serializers.MultipleChoiceResponseSerializer
+#     permission_classes = [permissions.IsOwner]
+# 
+# 
+# class OpenQuestionResponseViewSet(mixins.CreateModelMixin,
+#                                   mixins.RetrieveModelMixin,
+#                                   mixins.UpdateModelMixin,
+#                                   mixins.DestroyModelMixin,
+#                                   viewsets.GenericViewSet):
+#     queryset = models.OpenQuestionResponse.objects.all()
+#     serializer_class = serializers.OpenQuestionResponseSerializer
+#     permission_classes = [permissions.IsOwner]
 
 
 class OrganizationViewSet(mixins.RetrieveModelMixin,
