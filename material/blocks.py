@@ -1,3 +1,4 @@
+from django.utils.functional import cached_property
 from wagtail.core import blocks
 
 
@@ -22,3 +23,34 @@ class QuizBlock(blocks.ListBlock):
 
     # def get_translatable_segments(*args, **kwargs):
     #     import pdb;pdb.set_trace()
+
+
+class OpenQuestionChooserBlock(blocks.ChooserBlock):
+    class Meta:
+        icon = 'edit'
+
+    @cached_property
+    def target_model(self):
+        from .models import OpenQuestion
+        return OpenQuestion
+
+    @cached_property
+    def widget(self):
+        from .choosers import OpenQuestionChooser
+        return OpenQuestionChooser
+
+
+class QuizChooserBlock(blocks.ChooserBlock):
+    class Meta:
+        icon = 'help'
+        label = 'Question'
+
+    @cached_property
+    def target_model(self):
+        from .models import Quiz
+        return Quiz
+
+    @cached_property
+    def widget(self):
+        from .choosers import QuizChooser
+        return QuizChooser

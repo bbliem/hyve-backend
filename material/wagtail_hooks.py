@@ -2,6 +2,7 @@ from wagtail.core import hooks
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 
 from .models import OpenQuestion, Organization, Quiz
+from .choosers import OpenQuestionChooserViewSet, QuizChooserViewSet
 
 
 @modeladmin_register
@@ -30,6 +31,16 @@ class QuizAdmin(ModelAdmin):
     # menu_order = 601
     # list_display = ('name', 'logo')
     # search_filter = ('name',)
+
+
+@hooks.register('register_admin_viewset')
+def register_quiz_chooser_viewset():
+    return QuizChooserViewSet('quiz_chooser', url_prefix='quiz-chooser')
+
+
+@hooks.register('register_admin_viewset')
+def register_open_question_chooser_viewset():
+    return OpenQuestionChooserViewSet('open_question_chooser', url_prefix='open-question-chooser')
 
 
 @hooks.register('construct_page_action_menu')

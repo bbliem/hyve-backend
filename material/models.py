@@ -15,7 +15,7 @@ from wagtail.core.fields import RichTextField, StreamField
 from wagtailvideos.blocks import VideoChooserBlock
 
 from material import managers, storage
-from material.blocks import QuizBlock
+from material.blocks import OpenQuestionChooserBlock, QuizChooserBlock
 
 
 def get_uuid_file_basename(filename):
@@ -55,8 +55,10 @@ class Lesson(Page):
         ('lesson_content', blocks.RichTextBlock()),
         ('video', VideoChooserBlock()),
         ('page_break', blocks.StaticBlock()),
-        ('quiz', QuizBlock()),
-        ('open_question', blocks.RichTextBlock()),
+        # ('quiz', QuizBlock()),
+        ('quiz', QuizChooserBlock()),
+        # ('open_question', blocks.RichTextBlock()),
+        ('open_question', OpenQuestionChooserBlock()),
     ], blank=True)
 
     content_panels = Page.content_panels + [
@@ -72,14 +74,14 @@ class Quiz(ClusterableModel):
     class Meta:
         verbose_name_plural = 'quizzes'
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     internal_name = models.CharField(unique=True, max_length=250)
     # lesson = ParentalKey(Lesson, on_delete=models.CASCADE, related_name='quizzes')
 
     panels = [
         FieldPanel('internal_name'),
         MultiFieldPanel([
-            InlinePanel('questions'),
+            InlinePanel('questions', label='Question'),
         ], heading="Questions")
     ]
 
@@ -88,7 +90,7 @@ class Quiz(ClusterableModel):
 
 
 class MultipleChoiceQuestion(Orderable, ClusterableModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     quiz = ParentalKey('Quiz', on_delete=models.CASCADE, related_name='questions')
 
     text = models.CharField(max_length=250, blank=True)
@@ -96,13 +98,13 @@ class MultipleChoiceQuestion(Orderable, ClusterableModel):
     panels = [
         FieldPanel('text'),
         MultiFieldPanel([
-            InlinePanel('answers'),
+            InlinePanel('answers', label='Answer'),
         ], heading="Answers")
     ]
 
 
 class MultipleChoiceAnswer(Orderable):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     question = ParentalKey(MultipleChoiceQuestion, on_delete=models.CASCADE, related_name='answers')
 
     text = models.CharField(max_length=250, blank=True)
@@ -111,7 +113,7 @@ class MultipleChoiceAnswer(Orderable):
 
 
 class OpenQuestion(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     # lesson = ParentalKey(Lesson, on_delete=models.CASCADE, related_name='open_questions')
     internal_name = models.CharField(unique=True, max_length=250)
     text = models.CharField(max_length=250, blank=True)
