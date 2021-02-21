@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'taggit',
     # 'wagtail_localize',
     # 'wagtail_localize.locales',
+    'generic_chooser',
     'wagtailvideos',
     'rest_framework',
     'rest_framework.authtoken',
