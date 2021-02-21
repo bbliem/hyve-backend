@@ -11,7 +11,7 @@ drf-flex-fields
 gunicorn
 psycopg2-binary
 python-decouple
-wagtail
+wagtail>=2.12,<2.13
 wagtail-modeltranslation
 wagtail-react-streamfield
 wagtailvideos

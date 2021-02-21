@@ -1,8 +1,7 @@
 from wagtail.core import hooks
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 
-# from .models import OpenQuestion, Organization, Quiz
-from .models import Organization
+from .models import OpenQuestion, Organization, Quiz
 
 
 @modeladmin_register
@@ -13,6 +12,24 @@ class OrganizationAdmin(ModelAdmin):
     add_to_settings_menu = True
     list_display = ('name', 'logo')
     search_filter = ('name',)
+
+
+@modeladmin_register
+class OpenQuestionAdmin(ModelAdmin):
+    model = OpenQuestion
+    menu_icon = 'edit'
+    # menu_order = 601
+    # list_display = ('name', 'logo')
+    # search_filter = ('name',)
+
+
+@modeladmin_register
+class QuizAdmin(ModelAdmin):
+    model = Quiz
+    menu_icon = 'help'
+    # menu_order = 601
+    # list_display = ('name', 'logo')
+    # search_filter = ('name',)
 
 
 @hooks.register('construct_page_action_menu')

@@ -68,47 +68,56 @@ class Lesson(Page):
     subpage_types = []
 
 
-# class Quiz(ClusterableModel):
-#     class Meta:
-#         verbose_name_plural = 'quizzes'
-# 
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     lesson = ParentalKey(Lesson, on_delete=models.CASCADE, related_name='quizzes')
-# 
-#     panels = [
-#         FieldPanel('lesson'),
-#         MultiFieldPanel([
-#             InlinePanel('questions'),
-#         ], heading="Questions")
-#     ]
-# 
-# 
-# class MultipleChoiceQuestion(Orderable, ClusterableModel):
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     quiz = ParentalKey('Quiz', on_delete=models.CASCADE, related_name='questions')
-# 
-#     text = models.CharField(max_length=250, blank=True)
-# 
-#     panels = [
-#         FieldPanel('text'),
-#         MultiFieldPanel([
-#             InlinePanel('answers'),
-#         ], heading="Answers")
-#     ]
-# 
-# 
-# class MultipleChoiceAnswer(Orderable):
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     question = ParentalKey(MultipleChoiceQuestion, on_delete=models.CASCADE, related_name='answers')
-# 
-#     text = models.CharField(max_length=250, blank=True)
-#     correct = models.BooleanField(default=False)
-#     explanation = models.CharField(max_length=250, blank=True)
-# 
-# 
-# class OpenQuestion(models.Model):
-#     lesson = ParentalKey(Lesson, on_delete=models.CASCADE, related_name='open_questions')
-#     text = models.CharField(max_length=250, blank=True)
+class Quiz(ClusterableModel):
+    class Meta:
+        verbose_name_plural = 'quizzes'
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    internal_name = models.CharField(unique=True, max_length=250)
+    # lesson = ParentalKey(Lesson, on_delete=models.CASCADE, related_name='quizzes')
+
+    panels = [
+        FieldPanel('internal_name'),
+        MultiFieldPanel([
+            InlinePanel('questions'),
+        ], heading="Questions")
+    ]
+
+    def __str__(self):
+        return self.internal_name
+
+
+class MultipleChoiceQuestion(Orderable, ClusterableModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    quiz = ParentalKey('Quiz', on_delete=models.CASCADE, related_name='questions')
+
+    text = models.CharField(max_length=250, blank=True)
+
+    panels = [
+        FieldPanel('text'),
+        MultiFieldPanel([
+            InlinePanel('answers'),
+        ], heading="Answers")
+    ]
+
+
+class MultipleChoiceAnswer(Orderable):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    question = ParentalKey(MultipleChoiceQuestion, on_delete=models.CASCADE, related_name='answers')
+
+    text = models.CharField(max_length=250, blank=True)
+    correct = models.BooleanField(default=False)
+    explanation = models.CharField(max_length=250, blank=True)
+
+
+class OpenQuestion(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # lesson = ParentalKey(Lesson, on_delete=models.CASCADE, related_name='open_questions')
+    internal_name = models.CharField(unique=True, max_length=250)
+    text = models.CharField(max_length=250, blank=True)
+
+    def __str__(self):
+        return self.internal_name
 
 
 class Category(Page):
