@@ -43,7 +43,7 @@ class OpenQuestionChooserBlock(blocks.ChooserBlock):
 class QuizChooserBlock(blocks.ChooserBlock):
     class Meta:
         icon = 'help'
-        label = 'Question'
+        label = 'Quiz'
 
     @cached_property
     def target_model(self):

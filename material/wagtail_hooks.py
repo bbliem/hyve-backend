@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from wagtail.core import hooks
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 
@@ -64,23 +65,25 @@ def reorder_page_action_menu_items(menu_items, request, context):
 
 @hooks.register('construct_main_menu')
 def hide_main_menu_items(request, menu_items):
-    menu_items[:] = [m for m in menu_items if m.name != 'reports']
+    # Just checking for `m.name` doesn't work because the name changes by locale
+    menu_items[:] = [m for m in menu_items if m.__class__.__name__ != 'ReportsMenuItem']
 
 
 @hooks.register('construct_settings_menu')
 def hide_settings_menu_items(request, menu_items):
     HIDDEN_ITEMS = {
-        'groups',
-        'redirects',
-        'sites',
-        'workflow-tasks',
-        'workflows',
-        'groups',
-        'sites',
+        'GroupsMenuItem',
+        'RedirectsMenuItem',
+        'SitesMenuItem',
+        'WorkflowTasksMenuItem',
+        'WorkflowsMenuItem',
+        'GroupsMenuItem',
+        'SitesMenuItem',
     }
-    menu_items[:] = [m for m in menu_items if m.name not in HIDDEN_ITEMS]
+    # Just checking for `m.name` doesn't work because the name changes by locale
+    menu_items[:] = [m for m in menu_items if m.__class__.__name__ not in HIDDEN_ITEMS]
 
 
 @hooks.register('construct_page_listing_buttons')
 def hide_page_listing_buttons(buttons, page, page_perms, is_parent=False, context=None):
-    buttons[:] = [b for b in buttons if b.label != "View live"]
+    buttons[:] = [b for b in buttons if b.label != _("View live")]
