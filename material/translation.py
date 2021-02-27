@@ -26,25 +26,26 @@ class StaticPageTranslationOptions(TranslationOptions):
     )
 
 
-@register(Quiz)
-class QuizTranslationOptions(TranslationOptions):
-    fields = (
-    )
-
-
-@register(MultipleChoiceQuestion)
-class MultipleChoiceQuestionTranslationOptions(TranslationOptions):
-    fields = (
-        'text',
-    )
-
-
-@register(MultipleChoiceAnswer)
-class MultipleChoiceAnswerTranslationOptions(TranslationOptions):
-    fields = (
-        'text',
-        'explanation',
-    )
+# Due to bugs in wagtail-modeltranslation, we don't use it for quizzes
+# @register(Quiz)
+# class QuizTranslationOptions(TranslationOptions):
+#     fields = (
+#     )
+# 
+# 
+# @register(MultipleChoiceQuestion)
+# class MultipleChoiceQuestionTranslationOptions(TranslationOptions):
+#     fields = (
+#         'text',
+#     )
+# 
+# 
+# @register(MultipleChoiceAnswer)
+# class MultipleChoiceAnswerTranslationOptions(TranslationOptions):
+#     fields = (
+#         'text',
+#         'explanation',
+#     )
 
 
 @register(OpenQuestion)

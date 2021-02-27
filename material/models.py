@@ -93,13 +93,12 @@ class MultipleChoiceQuestion(Orderable, ClusterableModel):
     # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     quiz = ParentalKey('Quiz', on_delete=models.CASCADE, related_name='questions')
 
-    text = models.CharField(max_length=250, blank=True)
+    text_en = models.CharField(max_length=250, blank=True)
+    text_fi = models.CharField(max_length=250, blank=True)
 
     panels = [
-        FieldPanel('text'),
-        # MultiFieldPanel([
-        #     InlinePanel('answers', label='Answer'),
-        # ], heading="Answers"),
+        FieldPanel('text_en'),
+        FieldPanel('text_fi'),
         InlinePanel('answers', label='Answer', min_num=1),
     ]
 
@@ -108,14 +107,18 @@ class MultipleChoiceAnswer(Orderable):
     # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     question = ParentalKey(MultipleChoiceQuestion, on_delete=models.CASCADE, related_name='answers')
 
-    text = models.CharField(max_length=250, blank=True)
+    text_en = models.CharField(max_length=250, blank=True)
+    text_fi = models.CharField(max_length=250, blank=True)
     correct = models.BooleanField(default=False)
-    explanation = models.CharField(max_length=250, blank=True)
+    explanation_en = models.CharField(max_length=250, blank=True)
+    explanation_fi = models.CharField(max_length=250, blank=True)
 
     panels = [
-        FieldPanel('text'),
+        FieldPanel('text_en'),
+        FieldPanel('text_fi'),
         FieldPanel('correct'),
-        FieldPanel('explanation'),
+        FieldPanel('explanation_en'),
+        FieldPanel('explanation_fi'),
     ]
 
 
