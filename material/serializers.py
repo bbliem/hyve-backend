@@ -8,28 +8,28 @@ from material import models
 class StaticPageSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.StaticPage
-        fields = ['url', 'id', 'title_en', 'title_fi', 'content_en', 'content_fi']
+        fields = ['url', 'id', 'title_en', 'title_fi', 'body_en', 'body_fi']
 
 
-# class MultipleChoiceAnswerSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
-#     class Meta:
-#         model = models.MultipleChoiceAnswer
-#         fields = ['url', 'id', 'question', 'text_en', 'text_fi', 'correct', 'explanation_en', 'explanation_fi']
-# 
-# 
-# class MultipleChoiceQuestionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
-#     class Meta:
-#         model = models.MultipleChoiceQuestion
-#         fields = ['url', 'id', 'section', 'text_en', 'text_fi', 'answers']
-#         expandable_fields = {
-#             'answers': (MultipleChoiceAnswerSerializer, {'source': 'answers', 'many': True})
-#         }
-# 
-# 
-# class OpenQuestionSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = models.OpenQuestion
-#         fields = ['url', 'id', 'section', 'text_en', 'text_fi']
+class MultipleChoiceAnswerSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+    class Meta:
+        model = models.MultipleChoiceAnswer
+        fields = ['url', 'id', 'question', 'text_en', 'text_fi', 'correct', 'explanation_en', 'explanation_fi']
+
+
+class MultipleChoiceQuestionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+    class Meta:
+        model = models.MultipleChoiceQuestion
+        fields = ['url', 'id', 'text_en', 'text_fi', 'answers']
+        expandable_fields = {
+            'answers': (MultipleChoiceAnswerSerializer, {'source': 'answers', 'many': True})
+        }
+
+
+class OpenQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.OpenQuestion
+        fields = ['url', 'id', 'text_en', 'text_fi']
 
 
 # class SectionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
@@ -49,26 +49,28 @@ class StaticPageSerializer(FlexFieldsSerializerMixin, serializers.ModelSerialize
 #         expandable_fields = {
 #             'section': (SectionSerializer, {'source': 'section'})
 #         }
-# 
-# 
-# class LessonSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
-#     class Meta:
-#         model = models.Lesson
-#         fields = ['url', 'id', 'name_en', 'name_fi', 'description_en', 'description_fi', 'categories', 'sections']
-#         # expandable_fields = {
-#         #     'contents': (ContentSerializer, {'source': 'content_set', 'many': True, 'omit': ['lesson']})
-#         # }
-# 
-# 
-# class CategorySerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
-#     class Meta:
-#         model = models.Category
-#         fields = ['url', 'id', 'name_en', 'name_fi', 'description_en', 'description_fi', 'lessons']
-#         expandable_fields = {
-#             'lessons': (LessonSerializer, {'many': True})
-#         }
-# 
-# 
+
+
+class LessonSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+    class Meta:
+        model = models.Lesson
+        fields = ['url', 'id', 'title_en', 'title_fi', 'description_en', 'description_fi', 'body_en', 'body_fi']
+        # expandable_fields = {
+        #     'contents': (ContentSerializer, {'source': 'content_set', 'many': True, 'omit': ['lesson']})
+        # }
+
+
+class CategorySerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+    class Meta:
+        model = models.Category
+        fields = ['url', 'id', 'title_en', 'title_fi', 'description_en', 'description_fi', 'lessons']
+        expandable_fields = {
+            'lessons': (LessonSerializer, {'many': True, 'source': 'lessons'})
+        }
+
+    lessons = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
+
 # class SectionCompletionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
 #     class Meta:
 #         model = models.SectionCompletion
@@ -80,26 +82,26 @@ class StaticPageSerializer(FlexFieldsSerializerMixin, serializers.ModelSerialize
 #         return value
 
 
-# class MultipleChoiceResponseSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
-#     class Meta:
-#         model = models.MultipleChoiceResponse
-#         fields = ['url', 'id', 'user', 'answer', 'response', 'last_modified']
-# 
-#     def validate_user(self, value):
-#         if value != self.context['request'].user:
-#             raise serializers.ValidationError("User specified in MultipleChoiceResponse object is not yourself")
-#         return value
-# 
-# 
-# class OpenQuestionResponseSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
-#     class Meta:
-#         model = models.OpenQuestionResponse
-#         fields = ['url', 'id', 'user', 'question', 'response', 'last_modified']
-# 
-#     def validate_user(self, value):
-#         if value != self.context['request'].user:
-#             raise serializers.ValidationError("User specified in OpenQuestionResponse object is not yourself")
-#         return value
+class MultipleChoiceResponseSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+    class Meta:
+        model = models.MultipleChoiceResponse
+        fields = ['url', 'id', 'user', 'answer', 'response', 'last_modified']
+
+    def validate_user(self, value):
+        if value != self.context['request'].user:
+            raise serializers.ValidationError("User specified in MultipleChoiceResponse object is not yourself")
+        return value
+
+
+class OpenQuestionResponseSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+    class Meta:
+        model = models.OpenQuestionResponse
+        fields = ['url', 'id', 'user', 'question', 'response', 'last_modified']
+
+    def validate_user(self, value):
+        if value != self.context['request'].user:
+            raise serializers.ValidationError("User specified in OpenQuestionResponse object is not yourself")
+        return value
 
 
 class OrganizationSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):

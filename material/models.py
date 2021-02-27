@@ -150,6 +150,10 @@ class Category(Page):
     parent_page_types = ['wagtailcore.page']
     subpage_types = ['Lesson']
 
+    @property
+    def lessons(self):
+        return self.get_children().specific()
+
 
 class Organization(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -251,25 +255,25 @@ class User(PermissionsMixin, AbstractBaseUser):
 #     last_modified = models.DateTimeField(auto_now=True)
 
 
-# class MultipleChoiceResponse(models.Model):
-#     class Meta:
-#         constraints = [
-#             models.UniqueConstraint(fields=['user', 'answer'], name='unique_response_for_user_and_answer'),
-#         ]
-# 
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     answer = models.ForeignKey(MultipleChoiceAnswer, on_delete=models.CASCADE)
-#     response = models.BooleanField()
-#     last_modified = models.DateTimeField(auto_now=True)
-# 
-# 
-# class OpenQuestionResponse(models.Model):
-#     class Meta:
-#         constraints = [
-#             models.UniqueConstraint(fields=['user', 'question'], name='unique_response_for_user_and_question'),
-#         ]
-# 
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     question = models.ForeignKey(OpenQuestion, on_delete=models.CASCADE)
-#     response = models.TextField()
-#     last_modified = models.DateTimeField(auto_now=True)
+class MultipleChoiceResponse(models.Model):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'answer'], name='unique_response_for_user_and_answer'),
+        ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    answer = models.ForeignKey(MultipleChoiceAnswer, on_delete=models.CASCADE)
+    response = models.BooleanField()
+    last_modified = models.DateTimeField(auto_now=True)
+
+
+class OpenQuestionResponse(models.Model):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'question'], name='unique_response_for_user_and_question'),
+        ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(OpenQuestion, on_delete=models.CASCADE)
+    response = models.TextField()
+    last_modified = models.DateTimeField(auto_now=True)
