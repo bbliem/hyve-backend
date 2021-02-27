@@ -81,8 +81,8 @@ class Quiz(ClusterableModel):
     panels = [
         FieldPanel('internal_name'),
         MultiFieldPanel([
-            InlinePanel('questions', label='Question'),
-        ], heading="Questions")
+            InlinePanel('questions', label='Question', min_num=1),
+        ], heading="Questions"),
     ]
 
     def __str__(self):
@@ -97,9 +97,10 @@ class MultipleChoiceQuestion(Orderable, ClusterableModel):
 
     panels = [
         FieldPanel('text'),
-        MultiFieldPanel([
-            InlinePanel('answers', label='Answer'),
-        ], heading="Answers")
+        # MultiFieldPanel([
+        #     InlinePanel('answers', label='Answer'),
+        # ], heading="Answers"),
+        InlinePanel('answers', label='Answer', min_num=1),
     ]
 
 
@@ -111,12 +112,23 @@ class MultipleChoiceAnswer(Orderable):
     correct = models.BooleanField(default=False)
     explanation = models.CharField(max_length=250, blank=True)
 
+    panels = [
+        FieldPanel('text'),
+        FieldPanel('correct'),
+        FieldPanel('explanation'),
+    ]
+
 
 class OpenQuestion(models.Model):
     # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     # lesson = ParentalKey(Lesson, on_delete=models.CASCADE, related_name='open_questions')
     internal_name = models.CharField(unique=True, max_length=250)
     text = models.CharField(max_length=250, blank=True)
+
+    panels = [
+        FieldPanel('internal_name'),
+        FieldPanel('text'),
+    ]
 
     def __str__(self):
         return self.internal_name

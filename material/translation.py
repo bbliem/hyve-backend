@@ -1,7 +1,7 @@
 from modeltranslation.translator import TranslationOptions
 from modeltranslation.decorators import register
 
-from .models import Category, Lesson, StaticPage
+from .models import Category, Lesson, MultipleChoiceAnswer, MultipleChoiceQuestion, OpenQuestion, Quiz, StaticPage
 
 
 @register(Category)
@@ -23,4 +23,32 @@ class LessonTranslationOptions(TranslationOptions):
 class StaticPageTranslationOptions(TranslationOptions):
     fields = (
         'body',
+    )
+
+
+@register(Quiz)
+class QuizTranslationOptions(TranslationOptions):
+    fields = (
+    )
+
+
+@register(MultipleChoiceQuestion)
+class MultipleChoiceQuestionTranslationOptions(TranslationOptions):
+    fields = (
+        'text',
+    )
+
+
+@register(MultipleChoiceAnswer)
+class MultipleChoiceAnswerTranslationOptions(TranslationOptions):
+    fields = (
+        'text',
+        'explanation',
+    )
+
+
+@register(OpenQuestion)
+class OpenQuestionTranslationOptions(TranslationOptions):
+    fields = (
+        'text',
     )
