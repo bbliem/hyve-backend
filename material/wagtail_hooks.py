@@ -1,5 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 from wagtail.core import hooks
+from wagtail.contrib.modeladmin.mixins import ThumbnailMixin
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 
 from .models import OpenQuestion, Organization, Quiz
@@ -7,13 +8,14 @@ from .choosers import OpenQuestionChooserViewSet, QuizChooserViewSet
 
 
 @modeladmin_register
-class OrganizationAdmin(ModelAdmin):
+class OrganizationAdmin(ThumbnailMixin, ModelAdmin):
     model = Organization
     menu_icon = 'group'
     menu_order = 601
     add_to_settings_menu = True
-    list_display = ('name', 'logo')
+    list_display = ('name', 'admin_thumb')
     search_filter = ('name',)
+    thumb_image_field_name = 'logo'
 
 
 @modeladmin_register

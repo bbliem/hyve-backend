@@ -42,7 +42,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('name', models.CharField(blank=True, max_length=100)),
-                ('logo', models.ImageField(blank=True, storage=material.storage.OverwriteStorage(), upload_to=material.models.get_logo_file_path)),
                 ('password_reset_url', models.CharField(blank=True, help_text='Include the patterns {uid}, {token} and, optionally, {language}.', max_length=250)),
                 # ('lessons', models.ManyToManyField(blank=True, to='material.Lesson')),
             ],
