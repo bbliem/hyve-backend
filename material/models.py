@@ -56,6 +56,15 @@ class Lesson(Page):
         ('open_question', OpenQuestionChooserBlock()),
     ], blank=True)
 
+    # FIXME: The following two methods need to be kept in sync with the locales, which is terrible.
+    @property
+    def block_ids_en(self):
+        return [block.id for block in self.body_en]
+
+    @property
+    def block_ids_fi(self):
+        return [block.id for block in self.body_fi]
+
     content_panels = Page.content_panels + [
         FieldPanel('description'),
         StreamFieldPanel('body'),
@@ -213,8 +222,6 @@ class User(PermissionsMixin, AbstractBaseUser):
                                                   "their organization and its members.",
                                         verbose_name="Organization supervisor")
 
-    completed_lessons = models.ManyToManyField(Lesson, blank=True, through='LessonCompletion')
-
     objects = managers.UserManager()
 
     EMAIL_FIELD = 'email'
@@ -243,14 +250,17 @@ class User(PermissionsMixin, AbstractBaseUser):
         super().save(*args, **kwargs)
 
 
-class LessonCompletion(models.Model):
+class BlockCompletion(models.Model):
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['user', 'lesson'], name='unique_completion_for_user_and_lesson'),
+            models.UniqueConstraint(fields=['user', 'block'], name='unique_completion_for_user_and_block'),
         ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    # Store the UUID of the StreamField block that was completed. This is not kept in sync with the StreamField, so if
+    # the block is removed or the UUID changes, this model will contain obsolete values.
+    block = models.UUIDField()
     last_modified = models.DateTimeField(auto_now=True)
 
 
@@ -264,10 +274,6 @@ class MultipleChoiceResponse(models.Model):
     answer = models.ForeignKey(MultipleChoiceAnswer, on_delete=models.CASCADE)
     response = models.BooleanField()
     last_modified = models.DateTimeField(auto_now=True)
-
-    @property
-    def quiz(self):
-        return self.answer.question.quiz
 
 
 class OpenQuestionResponse(models.Model):

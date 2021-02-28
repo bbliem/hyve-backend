@@ -63,7 +63,7 @@ class OpenQuestionSerializer(serializers.ModelSerializer):
 class LessonSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Lesson
-        fields = ['url', 'id', 'title_en', 'title_fi', 'description_en', 'description_fi', 'body_en', 'body_fi']
+        fields = ['url', 'id', 'title_en', 'title_fi', 'description_en', 'description_fi', 'body_en', 'body_fi', 'block_ids_en', 'block_ids_fi']
         # expandable_fields = {
         #     'contents': (ContentSerializer, {'source': 'content_set', 'many': True, 'omit': ['lesson']})
         # }
@@ -80,21 +80,21 @@ class CategorySerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer)
     lessons = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
 
-class LessonCompletionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+class BlockCompletionSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
-        model = models.LessonCompletion
-        fields = ['url', 'id', 'user', 'lesson', 'last_modified']
+        model = models.BlockCompletion
+        fields = ['url', 'id', 'user', 'lesson', 'block', 'last_modified']
 
     def validate_user(self, value):
         if value != self.context['request'].user:
-            raise serializers.ValidationError("User specified in LessonCompletion object is not yourself")
+            raise serializers.ValidationError("User specified in BlockCompletion object is not yourself")
         return value
 
 
 class MultipleChoiceResponseSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.MultipleChoiceResponse
-        fields = ['url', 'id', 'user', 'quiz', 'answer', 'response', 'last_modified']
+        fields = ['url', 'id', 'user', 'answer', 'response', 'last_modified']
 
     def validate_user(self, value):
         if value != self.context['request'].user:
@@ -160,11 +160,11 @@ class OrganizationSerializerWithSupervisors(FlexFieldsSerializerMixin, serialize
 class UserSerializer(FlexFieldsSerializerMixin, Base64ModelSerializer):
     class Meta:
         model = models.User
-        fields = ['url', 'id', 'email', 'organization', 'username', 'name', 'avatar', 'is_supervisor', 'is_superuser', 'completed_lessons']
+        fields = ['url', 'id', 'email', 'organization', 'username', 'name', 'avatar', 'is_supervisor', 'is_superuser']
         read_only_fields = ['is_supervisor', 'is_superuser']
         expandable_fields = {
             'organization': OrganizationSerializer,
-            'lesson_completions': (LessonCompletionSerializer, {'source': 'lessoncompletion_set', 'many': True, 'omit': ['user']}),
+            'block_completions': (BlockCompletionSerializer, {'source': 'blockcompletion_set', 'many': True, 'omit': ['user']}),
             'multiple_choice_responses': (MultipleChoiceResponseSerializer, {'source': 'multiplechoiceresponse_set', 'many': True, 'omit': ['user']}),
             'open_question_responses': (OpenQuestionResponseSerializer, {'source': 'openquestionresponse_set', 'many': True, 'omit': ['user']}),
         }

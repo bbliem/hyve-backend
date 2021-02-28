@@ -53,13 +53,13 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
-class LessonCompletionViewSet(mixins.CreateModelMixin,
-                              mixins.RetrieveModelMixin,
-                              mixins.UpdateModelMixin,
-                              mixins.DestroyModelMixin,
-                              viewsets.GenericViewSet):
-    queryset = models.LessonCompletion.objects.all()
-    serializer_class = serializers.LessonCompletionSerializer
+class BlockCompletionViewSet(mixins.CreateModelMixin,
+                             mixins.RetrieveModelMixin,
+                             mixins.UpdateModelMixin,
+                             mixins.DestroyModelMixin,
+                             viewsets.GenericViewSet):
+    queryset = models.BlockCompletion.objects.all()
+    serializer_class = serializers.BlockCompletionSerializer
     permission_classes = [permissions.IsOwner]
 
 
