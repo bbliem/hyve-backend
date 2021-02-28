@@ -213,8 +213,7 @@ class User(PermissionsMixin, AbstractBaseUser):
                                                   "their organization and its members.",
                                         verbose_name="Organization supervisor")
 
-    # FIXME replace by something else
-    # completed_sections = models.ManyToManyField(Section, blank=True, through='SectionCompletion')
+    completed_lessons = models.ManyToManyField(Lesson, blank=True, through='LessonCompletion')
 
     objects = managers.UserManager()
 
@@ -244,15 +243,15 @@ class User(PermissionsMixin, AbstractBaseUser):
         super().save(*args, **kwargs)
 
 
-# class SectionCompletion(models.Model):
-#     class Meta:
-#         constraints = [
-#             models.UniqueConstraint(fields=['user', 'section'], name='unique_completion_for_user_and_section'),
-#         ]
-#
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     section = models.ForeignKey(Section, on_delete=models.CASCADE)
-#     last_modified = models.DateTimeField(auto_now=True)
+class LessonCompletion(models.Model):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'lesson'], name='unique_completion_for_user_and_lesson'),
+        ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    last_modified = models.DateTimeField(auto_now=True)
 
 
 class MultipleChoiceResponse(models.Model):
@@ -265,6 +264,10 @@ class MultipleChoiceResponse(models.Model):
     answer = models.ForeignKey(MultipleChoiceAnswer, on_delete=models.CASCADE)
     response = models.BooleanField()
     last_modified = models.DateTimeField(auto_now=True)
+
+    @property
+    def quiz(self):
+        return self.answer.question.quiz
 
 
 class OpenQuestionResponse(models.Model):

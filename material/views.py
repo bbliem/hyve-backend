@@ -29,6 +29,12 @@ class MultipleChoiceAnswerViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
+class QuizViewSet(viewsets.ModelViewSet):
+    queryset = models.Quiz.objects.all()
+    serializer_class = serializers.QuizSerializer
+    permission_classes = [permissions.IsSuperUserOrReadOnly]
+
+
 class OpenQuestionViewSet(viewsets.ModelViewSet):
     queryset = models.OpenQuestion.objects.all()
     serializer_class = serializers.OpenQuestionSerializer
@@ -47,14 +53,14 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsSuperUserOrReadOnly]
 
 
-# class SectionCompletionViewSet(mixins.CreateModelMixin,
-#                                mixins.RetrieveModelMixin,
-#                                mixins.UpdateModelMixin,
-#                                mixins.DestroyModelMixin,
-#                                viewsets.GenericViewSet):
-#     queryset = models.SectionCompletion.objects.all()
-#     serializer_class = serializers.SectionCompletionSerializer
-#     permission_classes = [permissions.IsOwner]
+class LessonCompletionViewSet(mixins.CreateModelMixin,
+                              mixins.RetrieveModelMixin,
+                              mixins.UpdateModelMixin,
+                              mixins.DestroyModelMixin,
+                              viewsets.GenericViewSet):
+    queryset = models.LessonCompletion.objects.all()
+    serializer_class = serializers.LessonCompletionSerializer
+    permission_classes = [permissions.IsOwner]
 
 
 class MultipleChoiceResponseViewSet(mixins.CreateModelMixin,
