@@ -13,27 +13,19 @@ class OrganizationAdmin(ThumbnailMixin, ModelAdmin):
     menu_icon = 'group'
     menu_order = 601
     add_to_settings_menu = True
-    list_display = ('name', 'admin_thumb')
     search_filter = ('name',)
-    thumb_image_field_name = 'logo'
 
 
 @modeladmin_register
 class OpenQuestionAdmin(ModelAdmin):
     model = OpenQuestion
     menu_icon = 'edit'
-    # menu_order = 601
-    # list_display = ('name', 'logo')
-    # search_filter = ('name',)
 
 
 @modeladmin_register
 class QuizAdmin(ModelAdmin):
     model = Quiz
     menu_icon = 'help'
-    # menu_order = 601
-    # list_display = ('name', 'logo')
-    # search_filter = ('name',)
 
 
 @hooks.register('register_admin_viewset')

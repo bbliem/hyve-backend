@@ -14,7 +14,6 @@ from wagtail.core.models import Orderable, Page
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtailvideos.blocks import VideoChooserBlock
-from wagtailvideos.models import Video
 
 from material import managers, storage
 from material.blocks import OpenQuestionChooserBlock, QuizChooserBlock
@@ -27,6 +26,12 @@ def get_uuid_file_basename(filename):
 
 def get_avatar_file_path(instance, filename):
     return os.path.join('avatars', get_uuid_file_basename(filename))
+
+
+def get_logo_file_path(instance, filename):
+    file_extension = os.path.splitext(filename)[1].lower()
+    basename = f'{instance.id}{file_extension}'
+    return os.path.join('logos', basename)
 
 
 def get_video_file_path(instance, filename):
@@ -186,11 +191,10 @@ class Organization(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, blank=True)
     lessons = models.ManyToManyField(Lesson, blank=True)
-    logo = models.ForeignKey('wagtailimages.Image',
-                             null=True,
-                             blank=True,
-                             on_delete=models.SET_NULL,
-                             related_name='+')
+    logo = models.ImageField(blank=True,
+                             storage=storage.OverwriteStorage(),
+                             upload_to=get_logo_file_path)
+
     # URL of password reset form in frontend, returned when the user requests a link to reset their password.
     password_reset_url = models.CharField(max_length=250,
                                           blank=True,
@@ -198,7 +202,7 @@ class Organization(models.Model):
 
     panels = [
         FieldPanel('name'),
-        ImageChooserPanel('logo'),
+        FieldPanel('logo'),
         FieldPanel('lessons'),
         FieldPanel('password_reset_url'),
     ]

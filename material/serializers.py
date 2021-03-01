@@ -5,6 +5,20 @@ from rest_framework import serializers
 from material import models
 
 
+# class ImageDataField(serializers.Field):
+#     def __init__(self, *args, **kwargs):
+#         kwargs['read_only'] = True
+#         super().__init__(*args, **kwargs)
+#
+#     def to_representation(self, value):
+#         return {
+#             'file': str(value.file),
+#             'title': value.title,
+#             'width': value.width,
+#             'height': value.height,
+#         }
+
+
 class StaticPageSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.StaticPage
