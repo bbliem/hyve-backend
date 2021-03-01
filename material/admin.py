@@ -1,3 +1,4 @@
+import wagtailvideos.models
 from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -6,6 +7,8 @@ from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 
 from material import models
+
+admin.site.register(wagtailvideos.models.Video)
 
 # admin.site.register(models.Category)
 admin.site.register(models.Organization)

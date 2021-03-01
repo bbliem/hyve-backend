@@ -14,6 +14,7 @@ from wagtail.core.models import Orderable, Page
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtailvideos.blocks import VideoChooserBlock
+from wagtailvideos.models import Video
 
 from material import managers, storage
 from material.blocks import OpenQuestionChooserBlock, QuizChooserBlock
@@ -30,6 +31,20 @@ def get_avatar_file_path(instance, filename):
 
 def get_video_file_path(instance, filename):
     return os.path.join('videos', get_uuid_file_basename(filename))
+
+
+def get_video_data(body_block):
+    result = {}
+    videos = [block.value for block in body_block if block.block_type == 'video']
+    for video in videos:
+        result[video.pk] = {
+            'title': video.title,
+            'file': str(video.file),
+            'thumbnail': str(video.thumbnail),
+            'duration': str(video.duration),
+            'file_size': video.file_size,
+        }
+    return result
 
 
 class StaticPage(Page):
@@ -56,7 +71,7 @@ class Lesson(Page):
         ('open_question', OpenQuestionChooserBlock()),
     ], blank=True)
 
-    # FIXME: The following two methods need to be kept in sync with the locales, which is terrible.
+    # FIXME: The following methods need to be kept in sync with the locales, which is terrible.
     @property
     def block_ids_en(self):
         return [block.id for block in self.body_en]
@@ -64,6 +79,14 @@ class Lesson(Page):
     @property
     def block_ids_fi(self):
         return [block.id for block in self.body_fi]
+
+    @property
+    def videos_en(self):
+        return get_video_data(self.body_en)
+
+    @property
+    def videos_fi(self):
+        return get_video_data(self.body_fi)
 
     content_panels = Page.content_panels + [
         FieldPanel('description'),
