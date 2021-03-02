@@ -49,10 +49,8 @@ urlpatterns = [
     # If we include djoser.urls like this, it won't be displayed in the browsable API since the path is duplicate.
     # path('', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
-    path('admin/', admin.site.urls),
-    path('cms/', include(wagtailadmin_urls)),  # TODO rename URL to `admin/`?
-    path('documents/', include(wagtaildocs_urls)),  # TODO remove?
-    path('pages/', include(wagtail_urls)),  # TODO remove?
+    # path('admin/', admin.site.urls),  # Django admin
+    path('admin/', include(wagtailadmin_urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.BROWSABLE_API:
