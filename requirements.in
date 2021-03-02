@@ -2,6 +2,7 @@ Django
 Pillow
 django-cleanup
 django-cors-headers
+django-extensions
 django-resized
 djangorestframework
 djangorestframework-camel-case
