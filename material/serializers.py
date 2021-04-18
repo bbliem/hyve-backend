@@ -1,25 +1,20 @@
 from drf_base64.serializers import ModelSerializer as Base64ModelSerializer
 from rest_flex_fields.serializers import FlexFieldsSerializerMixin
 from rest_framework import serializers
+from wagtail.core.rich_text import expand_db_html
 
 from material import models
 
 
-# class ImageDataField(serializers.Field):
-#     def __init__(self, *args, **kwargs):
-#         kwargs['read_only'] = True
-#         super().__init__(*args, **kwargs)
-#
-#     def to_representation(self, value):
-#         return {
-#             'file': str(value.file),
-#             'title': value.title,
-#             'width': value.width,
-#             'height': value.height,
-#         }
+class RichTextField(serializers.CharField):
+    def to_representation(self, value):
+        return expand_db_html(value)
 
 
 class StaticPageSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+    body_en = RichTextField()
+    body_fi = RichTextField()
+
     class Meta:
         model = models.StaticPage
         fields = ['url', 'id', 'title_en', 'title_fi', 'body_en', 'body_fi']
@@ -56,6 +51,9 @@ class OpenQuestionSerializer(serializers.ModelSerializer):
 
 
 class LessonSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+    description_en = RichTextField()
+    description_fi = RichTextField()
+
     class Meta:
         model = models.Lesson
         fields = ['url', 'id', 'title_en', 'title_fi', 'description_en', 'description_fi', 'body_en', 'body_fi',
@@ -66,6 +64,9 @@ class LessonSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
 
 
 class CategorySerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
+    description_en = RichTextField()
+    description_fi = RichTextField()
+
     class Meta:
         model = models.Category
         fields = ['url', 'id', 'title_en', 'title_fi', 'description_en', 'description_fi', 'lessons']
