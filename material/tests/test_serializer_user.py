@@ -12,6 +12,7 @@ def test_user_deserialize(organization):
     serializer = UserSerializer(data={
         'email': email,
         'organization': str(organization.id),
+        'username': f'{email}:{organization.id}',
         'name': name,
         'avatar': avatar,
     })

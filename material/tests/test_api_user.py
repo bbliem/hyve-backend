@@ -3,14 +3,14 @@ from django.urls import reverse
 
 from material.models import User, Organization
 
+pytestmark = pytest.mark.django_db
 
-@pytest.mark.django_db
+
 def test_user_list_without_auth(api_client):
     response = api_client.get(reverse('user-list'))
     assert response.status_code == 401
 
 
-@pytest.mark.django_db
 def test_user_list_admin(api_client, admin, user):
     """List all users"""
     api_client.force_authenticate(user=admin)
@@ -20,7 +20,6 @@ def test_user_list_admin(api_client, admin, user):
     assert user_ids == {str(admin.id), str(user.id)}
 
 
-@pytest.mark.django_db
 def test_user_list_unauthorized_user(api_client, user):
     """Only list own user (since Djoser setting HIDE_USERS is not set to False)"""
     # Create another user to check that it isn't listed
@@ -32,12 +31,13 @@ def test_user_list_unauthorized_user(api_client, user):
     assert user_ids == {str(user.id)}
 
 
-@pytest.mark.django_db
 def test_user_create(api_client, organization):
+    email = 'test@example.com'
     data = {
-        'email': 'test@example.com',
+        'email': email,
         'organization': organization.id,
         'password': 'foobarbaz',
+        'username': f'{email}:{organization.id}',
     }
     assert User.objects.count() == 0
     response = api_client.post(reverse('user-list'), data, format='json')
@@ -47,44 +47,57 @@ def test_user_create(api_client, organization):
         assert response.data[key] == data[key]
 
 
-@pytest.mark.django_db
 def test_user_create_with_duplicate_email_fails(api_client, organization, user):
     data = {
         'email': user.email,
         'organization': organization.id,
         'password': 'foobarbaz',
+        'username': f'{user.email}:{organization.id}',
     }
     response = api_client.post(reverse('user-list'), data, format='json')
     assert response.status_code == 400
 
 
-@pytest.mark.django_db
 def test_user_create_without_organization_fails(api_client):
+    email = 'test@example.com'
     data = {
-        'email': 'test@example.com',
+        'email': email,
         'password': 'foobarbaz',
+        'username': email,
     }
     with pytest.raises(TypeError):
         api_client.post(reverse('user-list'), data, format='json')
 
 
-@pytest.mark.django_db
 def test_user_create_with_empty_organization_fails(api_client):
+    email = 'test@example.com'
     data = {
-        'email': 'test@example.com',
+        'email': email,
         'password': 'foobarbaz',
         'organization': '',
+        'username': f'{email}:',
     }
     response = api_client.post(reverse('user-list'), data, format='json')
     assert response.status_code == 400
 
 
-@pytest.mark.django_db
-def test_user_create_is_superuser_ineffective(api_client, organization):
+def test_user_create_without_username_fails(api_client, organization):
     data = {
         'email': 'test@example.com',
         'organization': organization.id,
         'password': 'foobarbaz',
+    }
+    response = api_client.post(reverse('user-list'), data, format='json')
+    assert response.status_code == 400
+
+
+def test_user_create_is_superuser_ineffective(api_client, organization):
+    email = 'test@example.com'
+    data = {
+        'email': email,
+        'organization': organization.id,
+        'password': 'foobarbaz',
+        'username': f'{email}:{organization.id}',
         'is_superuser': 'true',
     }
     api_client.post(reverse('user-list'), data, format='json')
@@ -92,20 +105,17 @@ def test_user_create_is_superuser_ineffective(api_client, organization):
     assert not User.objects.first().is_superuser
 
 
-@pytest.mark.django_db
 def test_user_detail_unauthorized(api_client, user):
     response = api_client.get(reverse('user-detail', args=(user.id,)))
     assert response.status_code == 401
 
 
-@pytest.mark.django_db
 def test_user_detail(api_client, user):
     api_client.force_authenticate(user=user)
     response = api_client.get(reverse('user-detail', args=(user.id,)))
     assert response.status_code == 200
     expected_result = {
         'avatar': None,
-        'completed_sections': [],
         'email': user.email,
         'id': str(user.id),
         'is_superuser': False,
@@ -118,7 +128,6 @@ def test_user_detail(api_client, user):
     assert response.data == expected_result
 
 
-@pytest.mark.django_db
 def test_user_change(api_client, user):
     api_client.force_authenticate(user=user)
     url = reverse('user-detail', args=(user.id,))
@@ -137,7 +146,6 @@ def test_user_change(api_client, user):
         assert response.data[key] == new_data[key]
 
 
-@pytest.mark.django_db
 def test_user_change_as_superuser(api_client, superuser):
     api_client.force_authenticate(user=superuser)
     url = reverse('user-detail', args=(superuser.id,))
@@ -157,7 +165,6 @@ def test_user_change_as_superuser(api_client, superuser):
         assert response.data[key] == new_data[key]
 
 
-@pytest.mark.django_db
 def test_user_change_different_organization_ineffective(api_client, user):
     new_organization = Organization.objects.create(name='New organization')
     assert new_organization.id != user.organization.id
@@ -173,7 +180,6 @@ def test_user_change_different_organization_ineffective(api_client, user):
     assert response.data['username'] == user.username
 
 
-@pytest.mark.django_db
 def test_user_change_invalid_username_ineffective(api_client, user):
     api_client.force_authenticate(user=user)
     # Omit organization from username, which should cause an error
@@ -188,7 +194,6 @@ def test_user_change_invalid_username_ineffective(api_client, user):
     assert response.data['username'] == f'{new_data["email"]}:{new_data["organization"]}'
 
 
-@pytest.mark.django_db
 def test_user_change_promotion_to_superuser_ineffective(api_client, user):
     assert not user.is_superuser
     api_client.force_authenticate(user=user)
@@ -201,7 +206,6 @@ def test_user_change_promotion_to_superuser_ineffective(api_client, user):
     assert not response.data['is_superuser']
 
 
-@pytest.mark.django_db
 def test_user_change_promotion_to_supervisor_ineffective(api_client, user):
     assert not user.is_supervisor
     api_client.force_authenticate(user=user)

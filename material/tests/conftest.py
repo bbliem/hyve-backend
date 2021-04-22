@@ -1,7 +1,7 @@
 import pytest
 from rest_framework.test import APIClient
 
-from material.models import Organization, User, Category, Lesson, Section
+from material.models import Organization, User, Category, Lesson
 
 
 @pytest.fixture
@@ -27,11 +27,6 @@ def lesson(db):
 @pytest.fixture
 def organization(db):
     return Organization.objects.create(name='Organization')
-
-
-@pytest.fixture
-def section(db):
-    return Section.objects.create()
 
 
 @pytest.fixture
