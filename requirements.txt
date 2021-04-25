@@ -168,7 +168,10 @@ wagtail==2.12.4
     #   -r requirements.in
     #   wagtail-modeltranslation
     #   wagtail-react-streamfield
+    #   wagtailmedia
     #   wagtailvideos
+wagtailmedia==0.7.0
+    # via -r requirements.in
 wagtailvideos==2.10.6
     # via -r requirements.in
 webencodings==0.5.1

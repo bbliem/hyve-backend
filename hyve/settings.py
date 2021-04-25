@@ -69,7 +69,7 @@ INSTALLED_APPS = [
     # 'wagtail_localize',
     # 'wagtail_localize.locales',
     'generic_chooser',
-    'wagtailvideos',
+    'wagtailmedia',
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',

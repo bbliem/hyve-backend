@@ -16,4 +16,5 @@ wagtail>=2.12,<2.13
 wagtail-generic-chooser
 wagtail-modeltranslation
 wagtail-react-streamfield
+wagtailmedia
 wagtailvideos

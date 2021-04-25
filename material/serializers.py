@@ -1,6 +1,7 @@
 from drf_base64.serializers import ModelSerializer as Base64ModelSerializer
 from rest_flex_fields.serializers import FlexFieldsSerializerMixin
 from rest_framework import serializers
+from wagtail.api.v2.serializers import PageSerializer
 from wagtail.core.rich_text import expand_db_html
 
 from material import models
@@ -50,17 +51,15 @@ class OpenQuestionSerializer(serializers.ModelSerializer):
         fields = ['url', 'id', 'text_en', 'text_fi']
 
 
-class LessonSerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):
-    description_en = RichTextField()
-    description_fi = RichTextField()
-
+class LessonSerializer(FlexFieldsSerializerMixin, PageSerializer):
     class Meta:
         model = models.Lesson
         fields = ['url', 'id', 'title_en', 'title_fi', 'description_en', 'description_fi', 'body_en', 'body_fi',
-                  'block_ids_en', 'block_ids_fi', 'videos_en', 'videos_fi']
-        # expandable_fields = {
-        #     'contents': (ContentSerializer, {'source': 'content_set', 'many': True, 'omit': ['lesson']})
-        # }
+                  'block_ids_en', 'block_ids_fi']
+
+    # This hack is for getting PageSerializer to work, but I don't know exactly what it does :(
+    meta_fields = []
+    child_serializer_classes = {}
 
 
 class CategorySerializer(FlexFieldsSerializerMixin, serializers.ModelSerializer):

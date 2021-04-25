@@ -12,11 +12,9 @@ from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, MultiFieldPanel
 from wagtail.core import blocks
 from wagtail.core.models import Orderable, Page
 from wagtail.core.fields import RichTextField, StreamField
-from wagtail.images.edit_handlers import ImageChooserPanel
-from wagtailvideos.blocks import VideoChooserBlock
 
 from material import managers, storage
-from material.blocks import OpenQuestionChooserBlock, QuizChooserBlock
+from material.blocks import OpenQuestionChooserBlock, QuizChooserBlock, MediaChooserBlock
 
 
 def get_uuid_file_basename(filename):
@@ -32,24 +30,6 @@ def get_logo_file_path(instance, filename):
     file_extension = os.path.splitext(filename)[1].lower()
     basename = f'{instance.id}{file_extension}'
     return os.path.join('logos', basename)
-
-
-def get_video_file_path(instance, filename):
-    return os.path.join('videos', get_uuid_file_basename(filename))
-
-
-def get_video_data(body_block):
-    result = {}
-    videos = [block.value for block in body_block if block.block_type == 'video']
-    for video in videos:
-        result[video.pk] = {
-            'title': video.title,
-            'file': str(video.file),
-            'thumbnail': str(video.thumbnail),
-            'duration': str(video.duration),
-            'file_size': video.file_size,
-        }
-    return result
 
 
 class StaticPage(Page):
@@ -68,12 +48,10 @@ class Lesson(Page):
 
     body = StreamField([
         ('lesson_content', blocks.RichTextBlock()),
-        ('video', VideoChooserBlock()),
-        ('page_break', blocks.StaticBlock()),
-        # ('quiz', QuizBlock()),
+        ('media', MediaChooserBlock()),
         ('quiz', QuizChooserBlock()),
-        # ('open_question', blocks.RichTextBlock()),
         ('open_question', OpenQuestionChooserBlock()),
+        ('page_break', blocks.StaticBlock()),
     ], blank=True)
 
     # FIXME: The following methods need to be kept in sync with the locales, which is terrible.
@@ -84,14 +62,6 @@ class Lesson(Page):
     @property
     def block_ids_fi(self):
         return [block.id for block in self.body_fi]
-
-    @property
-    def videos_en(self):
-        return get_video_data(self.body_en)
-
-    @property
-    def videos_fi(self):
-        return get_video_data(self.body_fi)
 
     content_panels = Page.content_panels + [
         FieldPanel('description'),
