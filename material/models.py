@@ -12,6 +12,7 @@ from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, MultiFieldPanel
 from wagtail.core import blocks
 from wagtail.core.models import Orderable, Page
 from wagtail.core.fields import RichTextField, StreamField
+from wagtail.images.edit_handlers import ImageChooserPanel
 
 from material import managers, storage
 from material.blocks import OpenQuestionChooserBlock, QuizChooserBlock, MediaChooserBlock
@@ -45,7 +46,13 @@ class StaticPage(Page):
 
 class Lesson(Page):
     description = RichTextField(blank=True)
-
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     body = StreamField([
         ('lesson_content', blocks.RichTextBlock()),
         ('media', MediaChooserBlock()),
@@ -65,6 +72,7 @@ class Lesson(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel('description'),
+        ImageChooserPanel('image'),
         StreamFieldPanel('body'),
     ]
 
@@ -144,9 +152,17 @@ class Category(Page):
         verbose_name_plural = 'categories'
 
     description = RichTextField(blank=True)
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     content_panels = Page.content_panels + [
         FieldPanel('description'),
+        ImageChooserPanel('image'),
     ]
 
     parent_page_types = ['wagtailcore.page']
