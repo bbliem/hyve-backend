@@ -217,6 +217,9 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Set type of implicit primary keys to AutoField. In newer versions of Django it is BigAutoField by default.
+# https://docs.djangoproject.com/en/3.2/releases/3.2/#customizing-type-of-auto-created-primary-keys
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
