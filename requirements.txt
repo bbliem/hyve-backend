@@ -14,7 +14,7 @@ bcp47==0.0.4
     # via wagtailvideos
 beautifulsoup4==4.9.3
     # via wagtail
-certifi==2021.10.8
+certifi==2022.12.7
     # via requests
 cffi==1.15.0
     # via cryptography
